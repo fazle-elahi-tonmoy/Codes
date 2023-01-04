@@ -75,13 +75,17 @@ void text_speed_adjust() {
   display.clearDisplay();
   text("SPEED", 35, 2);
   text("ADJUST", 29, 24);
-  text("L:   R:  ", 11, 46);
-  int p = EEPROM.read(6);
-  String value = String(p, 10);
-  text(value, 33, 46);
-  p = EEPROM.read(7);
-  value = String(p, 10);
-  text(value, 93, 46);
+  text("S", 0, 46);
+  text(":", 8, 46);
+  text("E", 66, 46);
+  text(":", 74, 46);
+  int p = (sp * 100) / 25;
+  String value = String(p, 10) + "%";
+  text(value, 16, 46);
+  p = (spe * 100) / 250;
+  if (p < 0) p = -p;
+  value = String(p, 10) + "%";
+  text(value, 82, 46);
   display.display();
 }
 

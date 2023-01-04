@@ -35,10 +35,10 @@ void speed_adjust() {
     p = map(analogRead(13), 0, 1000, 0, 25);
     display.clearDisplay();
     String value = String(p, 10);
-    text("LEFT :", 12, 16);
-    text(value, 94, 16);
-    display.drawRect(3, 41, 123, 13, WHITE);
-    for (int i = 4; i <= p * 5 ; i++)
+    text("SPEED:", 7, 16);
+    text(value, 80, 16);
+    display.drawRect(4, 41, 122, 13, WHITE);
+    for (int i = 5; i <= (p - 1) * 5 + 5; i++)
       for (int j = 42; j <= 52 ; j++) {
         display.drawLine(4, j, i, j, WHITE);
       }
@@ -53,21 +53,30 @@ void speed_adjust() {
   }
   EEPROM.write(6, p);
   delay(10);
-  spl = EEPROM.read(6);
+  sp = EEPROM.read(6);
 
   while (digitalRead(swr) == LOW);
 
   while (digitalRead(swr) == HIGH) {
-    p = map(analogRead(13), 0, 1000, 0, 25);
+    p = map(analogRead(13), 0, 1020, -127, 127);
     display.clearDisplay();
     String value = String(p, 10);
-    text("RIGHT :", 7, 16);
-    text(value, 94, 16);
-    display.drawRect(3, 41, 123, 13, WHITE);
-    for (int i = 4; i <= p * 5; i++)
-      for (int j = 42; j <= 52 ; j++) {
-        display.drawLine(4, j, i, j, WHITE);
-      }
+    text("ERROR:", 0, 16);
+    text(value, 70, 16);
+    display.drawRect(0, 41, 128, 13, WHITE);
+    if (p > 0) {
+      for (int i = 64; i <= (p / 2) + 64; i++)
+        for (int j = 42; j <= 52 ; j++) {
+          display.drawLine(64, j, i, j, WHITE);
+        }
+    }
+    else if (p < 0) {
+      for (int i = 64; i >= (p / 2) + 64; i--)
+        for (int j = 42; j <= 52 ; j++) {
+          display.drawLine(64, j, i, j, WHITE);
+        }
+    }
+    else display.drawLine(64, 42, 64, 52, WHITE);
     display.display();
     if (digitalRead(swl) == LOW) {
       display.clearDisplay();
@@ -84,9 +93,9 @@ void speed_adjust() {
   text("DONE!!!", 23, 24);
   display.display();
   delay(300);
-  EEPROM.write(7, p);
+  EEPROM.write(7, p + 128);
   delay(10);
-  spr = EEPROM.read(7);
+  spe = EEPROM.read(7)-128;
 }
 
 

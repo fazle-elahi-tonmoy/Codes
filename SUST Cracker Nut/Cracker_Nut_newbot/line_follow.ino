@@ -114,95 +114,95 @@ void line_follow() {
       //.............................................................line shuru
       else if (bin == 12) {
         if (k > 0) {
-          motorSpeedL(10 * spr, 10 * spl);
+          motorSpeedL(10 * sp, 10 * sp);
           delay(k * 6);
         }
         else if (k < 0) {
           k = -k;
-          motorSpeedR(10 * spr, 10 * spl);
+          motorSpeedR(10 * sp, 10 * sp);
           delay(k * 6);
         }
         k = 0;
-        mos(10 * spr, 10 * spl);
+        mos(10 * sp, 10 * sp);
         if (cl < peak) cl++;
       }
       else if (bin == 4) {
-        mos(9 * spr, 10 * spl);
+        mos(9 * sp, 10 * sp);
         if (cl < peak) cl++;
       }
 
       else if (bin == 8) {
-        mos(10 * spr, 9 * spl);
+        mos(10 * sp, 9 * sp);
         if (cl < peak) cl++;
       }
       //..................................................left side position
       else if (bin == 6) {
         if (k < 2) {
-          motorSpeedR(10 * spr, 10 * spl);
+          motorSpeedR(10 * sp, 10 * sp);
           delay(dt);
           k = 2;
         }
-        mos(6 * spr, 10 * spl);
+        mos(6 * sp, 10 * sp);
       }
       else if (bin == 2) {
         if (k < 3) {
-          motorSpeedR(10 * spr, 10 * spl);
+          motorSpeedR(10 * sp, 10 * sp);
           delay(dt);
           k = 3;
         }
-        mos(3 * spr, 10 * spl);
+        mos(3 * sp, 10 * sp);
       }
       else if (bin == 3) {
         if (k < 4) {
-          motorSpeedR(10 * spr, 10 * spl);
+          motorSpeedR(10 * sp, 10 * sp);
           delay(dt);
           k = 4;
         }
-        mos( 0 * spr, 10 * spl);
+        mos( 0 * sp, 10 * sp);
         //mov = 1;
       }
       else if (bin == 1) {
         if (k < 5) {
-          motorSpeedR(10 * spr, 10 * spl);
+          motorSpeedR(10 * sp, 10 * sp);
           delay(dt);
           k = 5;
         }
-        mos(-3 * spr, 10 * spl);
+        mos(-3 * sp, 10 * sp);
       }
       // ..................................................dan side shesh
       // .....................................................bam side shuru
       else if (bin == 24) {
         if (k > -2) {
-          motorSpeedL(10 * spr, 10 * spl);
+          motorSpeedL(10 * sp, 10 * sp);
           delay(dt);
           k = -2;
         }
-        mos(10 * spr, 6 * spl);
+        mos(10 * sp, 6 * sp);
       }
       else if (bin == 16) {
         if (k > -3) {
-          motorSpeedL(10 * spr, 10 * spl);
+          motorSpeedL(10 * sp, 10 * sp);
           delay(dt);
           k = -3;
         }
-        mos(10 * spr, 3 * spl);
+        mos(10 * sp, 3 * sp);
       }
       else if (bin == 48) {
         if (k > -4) {
-          motorSpeedL(10 * spr, 10 * spl);
+          motorSpeedL(10 * sp, 10 * sp);
           delay(dt);
           k = -4;
         }
-        mos(10 * spr, 0 * spl);
+        mos(10 * sp, 0 * sp);
         //mov = 2;
       }
       else if (bin == 32) {
         if (k > -5) {
-          motorSpeedL(10 * spr, 10 * spl);
+          motorSpeedL(10 * sp, 10 * sp);
           delay(dt);
           k = -5;
         }
-        mos(10 * spr, -3 * spl);
+        mos(10 * sp, -3 * sp);
       }
     }//...........................................................................end sum 1
     //...............................................................................sum=3||sum=4||sum=5

@@ -34,8 +34,8 @@ NewPing sonarr(trr, trr, 90);
 #define rmb 4
 
 //for line follow
-int spl = 25;
-int spr = 22;
+int sp = 25;
+int spe = 0;
 int btd = 60;
 int mtd = 200;
 int ltd = 60;
@@ -119,8 +119,8 @@ void setup()
 
   for (int i = 0; i < 6; i++) trash[i] = EEPROM.read(i) * 5;
 
-  spl = EEPROM.read(6);
-  spr = EEPROM.read(7);
+  sp = EEPROM.read(6);
+  spe = EEPROM.read(7)-128;
   hpos = EEPROM.read(8);
   gpos = EEPROM.read(9);
   counter = EEPROM.read(10);
@@ -192,7 +192,7 @@ void loop()
       text("STARTING..", 04, 24);
       display.display();
       delay(1000);
-      while (digitalRead(swl) == HIGH) mos(10 * spr, 10 * spl);
+      while (digitalRead(swl) == HIGH) mos(10 * sp, 10 * sp);
       mos(0, 0);
     }
     sust_cracker_nut();
@@ -226,9 +226,6 @@ void loop()
   //  if(sr>5 && sr<20) digitalWrite(calout, HIGH);
 
   //  Serial.println(colour());
-  Serial.print(analogRead(8));
-  Serial.print(" ");
-  Serial.println(analogRead(9));
 
 
 }

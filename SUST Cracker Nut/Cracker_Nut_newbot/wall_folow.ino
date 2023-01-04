@@ -5,7 +5,7 @@ void wall_follow() {
     while (sonarleft() == 1);
     while (sonarright() == 1);
     sonarfront();
-    mos(8 * spr, 8 * spl);
+    mos(8 * sp, 8 * sp);
   }
   sl = sr = sf = 0;
   digitalWrite(light, LOW);
@@ -20,7 +20,7 @@ int sonarleft() {
     error = midpoint - sl;
     error = constrain(error, -5, 5);
     error = error * wallp;
-    mos(8 * spr - error, 8 * spl + error);
+    mos(8 * sp - error, 8 * sp + error);
     return 1;
   }
   else return 0;
@@ -35,7 +35,7 @@ int sonarright() {
     error = midpoint - sr;
     error = constrain(error, -5, 5);
     error = error * wallp;
-    mos(8 * spr + error, 8 * spl - error);
+    mos(8 * sp + error, 8 * sp - error);
     return 1;
   }
   else return 0;
@@ -47,13 +47,13 @@ void sonarfront() {
   if (sf < wall_boundary && sf > 5) {
     sonar();
     digitalWrite(green, HIGH);
-    mos(-8 * spr, -8 * spl);
+    mos(-8 * sp, -8 * sp);
     delay(100);
-    (sl <= 30 && sl >= 5) ? motorSpeedR(6 * spr, 6 * spl) : motorSpeedL(6 * spr, 6 * spl);
+    (sl <= 30 && sl >= 5) ? motorSpeedR(6 * sp, 6 * sp) : motorSpeedL(6 * sp, 6 * sp);
     delay(turn);
-    (sl <= 30 && sl >= 5) ? motorSpeedL(6 * spr, 6 * spl) : motorSpeedR(6 * spr, 6 * spl);
+    (sl <= 30 && sl >= 5) ? motorSpeedL(6 * sp, 6 * sp) : motorSpeedR(6 * sp, 6 * sp);
     delay(50);
-    mos(8 * spr, 8 * spl);
+    mos(8 * sp, 8 * sp);
     sf = 0;
     sl = sr = midpoint;
     digitalWrite(green, LOW);
