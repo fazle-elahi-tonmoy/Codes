@@ -32,7 +32,6 @@ NewPing sonarr(trr, trr, 90);
 #define lmb 3
 #define rmf 5
 #define rmb 4
-#define switchin 24
 
 //for line follow
 int spl = 25;
@@ -40,6 +39,7 @@ int spr = 22;
 int btd = 60;
 int mtd = 200;
 int ltd = 60;
+int rtd = 0;
 int tsp = 200;
 #define dt 10
 int br = 60;
@@ -69,7 +69,8 @@ int sensor[] = { 0, 0, 0, 0, 0, 0};
 int bina[] = {1, 2, 4, 8, 16, 32};
 
 //for calibration & store
-#define calin 22
+#define swl 22
+#define swr 24
 int minimum[] = {1024, 1024, 1024, 1024, 1024, 1024};
 int maximum[] = {0, 0, 0, 0, 0, 0};
 int trash[] = {0, 0, 0, 0, 0, 0};
@@ -80,7 +81,6 @@ float cal_p = 0.5;
 #define green 11
 #define blue 13
 #define light 44
-#define tail 26
 
 
 
@@ -93,7 +93,8 @@ void setup()
   display.setTextSize(2);
   display.setTextColor(WHITE);
 
-  pinMode(calin, INPUT_PULLUP);
+  pinMode(swl, INPUT_PULLUP);
+  pinMode(swr , INPUT_PULLUP);
   pinMode(light, OUTPUT);
   pinMode(s0, OUTPUT);
   pinMode(s1, OUTPUT);
@@ -107,14 +108,11 @@ void setup()
   pinMode(blue, OUTPUT);
   pinMode(red, OUTPUT);
   pinMode(green, OUTPUT);
-  pinMode(tail, OUTPUT);
   pinMode(A11, OUTPUT);
   pinMode(A15, OUTPUT);
   digitalWrite(A11, LOW);
   digitalWrite(A15, HIGH);
-  pinMode(switchin , INPUT_PULLUP);
   digitalWrite(13, LOW);
-  digitalWrite(tail, LOW);
   digitalWrite(s0, LOW);
   digitalWrite(s1, HIGH);
   mos(0, 0);
@@ -128,22 +126,23 @@ void setup()
   counter = EEPROM.read(10);
   turn = EEPROM.read(11) * 5;
   mtd = EEPROM.read(12);
-  ltd = EEPROM.read(13);
-  tsp = EEPROM.read(14);
-  br = EEPROM.read(15);
-  d = EEPROM.read(16);
-  base = EEPROM.read(17) * d;
-  peak = EEPROM.read(18) * d;
+  rtd = EEPROM.read(13);
+  ltd = EEPROM.read(14);
+  tsp = EEPROM.read(15);
+  br = EEPROM.read(16);
+  d = EEPROM.read(17);
+  base = EEPROM.read(18) * d;
+  peak = EEPROM.read(19) * d;
   cl = base;
   brake = cl / d;
-  side = EEPROM.read(19);
-  object_boundary = EEPROM.read(20);
-  wall_boundary = EEPROM.read(21);
-  midpoint = EEPROM.read(22);
-  wallp = EEPROM.read(23);
-  cal_p = EEPROM.read(24) * 0.1;
+  side = EEPROM.read(20);
+  object_boundary = EEPROM.read(21);
+  wall_boundary = EEPROM.read(22);
+  midpoint = EEPROM.read(23);
+  wallp = EEPROM.read(24);
+  cal_p = EEPROM.read(25) * 0.1;
+  Serial.begin(9600);
   sust_cracker_nut();
-  Serial.begin(38400);
 
 }
 
@@ -154,6 +153,11 @@ void loop()
   r = menu_function1();
   if (r != 0) {
     if (r == 1) {
+      if (mode == 0) {
+        display.clearDisplay();
+        text(" REVERSE ", 10, 24);
+        display.display();
+      }
       delay(200);
       line_follow();
       motorSpeedS();
@@ -163,22 +167,22 @@ void loop()
       for (int i = 0; i < 6; i++) trash[i] = EEPROM.read(i) * 5;
     }
     else if (r == 3) {
-      while (digitalRead(calin) == HIGH) analog_reading_display();
+      while (digitalRead(swl) == HIGH) analog_reading_display();
     }
     else if (r == 4) {
-      while (digitalRead(calin) == HIGH) digital_reading_display();
+      while (digitalRead(swl) == HIGH) digital_reading_display();
     }
     else if (r == 5) {
-      while (digitalRead(calin) == HIGH) sonar_reading_display();
+      while (digitalRead(swl) == HIGH) sonar_reading_display();
     }
     else if (r == 6) {
       digitalWrite(light, HIGH);
-      while (digitalRead(calin) == HIGH) {
+      while (digitalRead(swl) == HIGH) {
         display.clearDisplay();
         char c = colour();
-        if(c == 'r') text("   RED   ",10, 16);
-        else if(c == 'g') text("  GREEN  ",10, 16);
-        else if(c == 'b') text("   BLUE   ",4, 16);
+        if (c == 'r') text("   RED   ", 10, 16);
+        else if (c == 'g') text("  GREEN  ", 10, 16);
+        else if (c == 'b') text("   BLUE   ", 4, 16);
         display.display();
       }
       digitalWrite(light, LOW);
@@ -188,11 +192,11 @@ void loop()
       text("STARTING..", 04, 24);
       display.display();
       delay(1000);
-      while (digitalRead(calin) == HIGH) mos(10 * spr, 10 * spl);
+      while (digitalRead(swl) == HIGH) mos(10 * spr, 10 * spl);
       mos(0, 0);
     }
     sust_cracker_nut();
-    while (digitalRead(calin) == LOW || digitalRead(switchin) == LOW);
+    while (digitalRead(swl) == LOW || digitalRead(swr) == LOW);
   }
 
   r = menu_function2();
@@ -209,7 +213,7 @@ void loop()
     }
     else if (r == 6) headlight();
     sust_cracker_nut();
-    while (digitalRead(calin) == LOW || digitalRead(switchin) == LOW);
+    while (digitalRead(swl) == LOW || digitalRead(swr) == LOW);
   }
 
 
@@ -222,5 +226,9 @@ void loop()
   //  if(sr>5 && sr<20) digitalWrite(calout, HIGH);
 
   //  Serial.println(colour());
+  Serial.print(analogRead(8));
+  Serial.print(" ");
+  Serial.println(analogRead(9));
+
 
 }

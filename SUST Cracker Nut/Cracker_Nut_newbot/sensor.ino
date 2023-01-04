@@ -1,5 +1,5 @@
 void cal() {
-  motorSpeedR(250, 250);
+  motorSpeedR(150, 150);
   for (int c = 0; c < 3000 ; c++)
     for (int i = 0; i < 6; i++) {
       sensor[i] = analogRead(i);
@@ -38,8 +38,8 @@ void sonar() {
 char colour() {
   int R, G, B;
   char ch;
-  
-  
+
+
   digitalWrite(s2, LOW);
   digitalWrite(s3, LOW);
   delay(10);
@@ -55,9 +55,9 @@ char colour() {
   delay(10);
   B = pulseIn (out, LOW);
 
-  if(R<G && R<B) ch='r';
-  if(B<G && R>B) ch='b';
-  if(R>G && G<B) ch='g';
+  if (R < G && R < B) ch = 'r';
+  if (B < G && R > B) ch = 'b';
+  if (R > G && G < B) ch = 'g';
   return ch;
 }
 
@@ -75,12 +75,12 @@ void debug() {
   Serial.println(sr);
 }
 
-int ltouch(){
-  if(analogRead(7)>100) return 1;
+int ltouch() {
+  if (analogRead(9) > 200) return 1;
   else return 0;
 }
 
-int rtouch(){
-  if(analogRead(6)>100) return 1;
+int rtouch() {
+  if (analogRead(8) > 200) return 1;
   else return 0;
 }

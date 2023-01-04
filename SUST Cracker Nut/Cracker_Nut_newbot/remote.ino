@@ -1,6 +1,6 @@
 void remote_control() {
   int lowlimit = 40;
-  while (digitalRead(calin) == HIGH && digitalRead(switchin) == HIGH) {
+  while (digitalRead(swl) == HIGH && digitalRead(swr) == HIGH) {
     if (Serial.available() > 0) {
       char data =  Serial.read();
       if (data == 'F')      mos(10 * spr, 10 * spl);

@@ -13,7 +13,6 @@ void obstacle(int a) {
     check();
     while (sum == 0) check();
     while (sum != 0) check();
-    delay(btd);
     braking_mechanism();
     (a == 1) ? motorSpeedR(6 * spr, 6 * spl) : motorSpeedL(6 * spr, 6 * spl);
     check();

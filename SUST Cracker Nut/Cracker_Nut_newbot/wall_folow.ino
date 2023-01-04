@@ -1,6 +1,5 @@
 void wall_follow() {
-  digitalWrite(blue, HIGH);
-  digitalWrite(red, HIGH);
+  digitalWrite(light, HIGH);
   while (sum == 0) {
     check();
     while (sonarleft() == 1);
@@ -9,8 +8,7 @@ void wall_follow() {
     mos(8 * spr, 8 * spl);
   }
   sl = sr = sf = 0;
-  digitalWrite(blue, LOW);
-  digitalWrite(red, LOW);
+  digitalWrite(light, LOW);
 }
 
 int sonarleft() {
@@ -68,6 +66,6 @@ int wall_trigger(int a) {
     (a == 2) ? sl = sonarl.ping_cm() : sr = sonarr.ping_cm();
     mi3 = mi2;
   }
-  if ((a == 2 && sl > 0 && sl < 25) || (a == 1 && sr > 0 && sr < 25)) return 1;
+  if ((a == 2 && sl > 0 && sl < 20) || (a == 1 && sr > 0 && sr < 20)) return 1;
   else return 0;
 }

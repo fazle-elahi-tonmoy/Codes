@@ -35,3 +35,16 @@ void motorSpeedB(int speedA, int speedB) {
 void motorSpeedS() {
   mos(0, 0);
 }
+
+void braking_mechanism() {
+  if (cl != 0) motorSpeedB(10 * spr, 10 * spl);
+  brake = cl / d;
+  delay(brake);
+  k30 = 0;
+  k90 = 0;
+  mov = 0;
+  cross = 0;
+  cl = base;
+  brake = cl / d;
+  k = 0;
+}
