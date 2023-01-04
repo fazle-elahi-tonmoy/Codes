@@ -1,4 +1,4 @@
-void motor(int a, int b){
+void motor(short int a, short int b){
   if(a>=0){
     digitalWrite(left_motor_forward, 1);
     digitalWrite(left_motor_backward, 0);

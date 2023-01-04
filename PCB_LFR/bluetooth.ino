@@ -17,8 +17,16 @@ void bluetooth() {
       else if (x == 'H') motor(0, -s * spdr);
       else if (x == 'J') motor(-s * spdl, 0);
       else if (x == 'S') motor(0, 0);
-      else if (x == 'U') digitalWrite(light, HIGH);
-      else if (x == 'u') digitalWrite(light, LOW);
+      else if (x == 'W') digitalWrite(light, HIGH);
+      else if (x == 'w') digitalWrite(light, LOW);
+      else if (x == 'X') {
+      lefthand.write(lservo[2]);
+      righthand.write(rservo[2]);
+      }
+      else if (x == 'x') {
+      lefthand.write(lservo[0]);
+      righthand.write(rservo[0]);
+      }
       else if (x == '0') s = 0;
       else if (x == '1') s = 1;
       else if (x == '2') s = 2;
@@ -32,6 +40,8 @@ void bluetooth() {
       else if (x == 'q') s = 10;
     }
   }
-  intro();  motor(0, 0); digitalWrite(light, 0); 
+  intro();  motor(0, 0); digitalWrite(light, 0);
+  lefthand.write(lservo[0]);
+  righthand.write(rservo[0]);
   while (digitalRead(swl) == LOW || digitalRead(swr) == LOW);
 }
