@@ -72,8 +72,10 @@ void display_value(int a) {
   }
 
   if (ss % 2 && menu_count == 1) matrix[7] |= second_symbol_2;
-  if (clock.isArmed1()) matrix[7] |= alarm_symbol;
-  if (clock.isArmed2()) matrix[7] |= special_alarm_symbol;
+  if (clock.isArmed1() && menu_count < 4) matrix[7] |= alarm_symbol;
+  if (menu_count == 4) matrix[7] |= B00000100;
+  else if (menu_count == 5) matrix[7] |= B00000001;
+  (clock.isArmed2()) ? digitalWrite(alarm_2_display_led, HIGH) : digitalWrite(alarm_2_display_led, LOW);
   for (byte i = 0; i < 8; i++) lc.setRow(0, i, matrix[i]);
   for (byte i = 0; i < 8; i++) matrix[i] = 0;
 

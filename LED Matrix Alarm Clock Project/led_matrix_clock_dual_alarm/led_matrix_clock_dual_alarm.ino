@@ -17,12 +17,12 @@ RTCAlarmTime a2;
 //this is for push buttons and buzzer
 #define menu_button 6 //this will shuffle the menu or bring back to menu
 #define set_button 11 //this will engage or change a value
-#define special_button 8 //this will bring to the second alarm menu 
+#define special_button 8 //this will bring to the second alarm menu
 #define led 13 //to ensure if the button is pressed
 #define warning_led_1 4 //this will turn on if the starting time of second alarm is passed
 #define warning_led_2 3 //this will turn on if the starting time of second alarm is passed
 #define warning_led_3 5 //this will turn on if the starting time of second alarm is passed
-#define alarm_2_display_led 7 //this will indicate if you are on 2nd alarm screen
+#define alarm_2_display_led 7 //this will indicate if your second alarm is turned on
 #define buzzer 2 //don't set this as same as led pin
 #define long_press_timer 1 //minimum second pressing required to register a long press
 
@@ -55,8 +55,7 @@ uint32_t m1, m2, m3, sz, al = millis();
 byte pm_symbol = B11110000;
 byte second_symbol_1 = B00000011;
 byte second_symbol_2 = B11000000;
-byte alarm_symbol = B00000011;
-byte special_alarm_symbol = B00011000;
+byte alarm_symbol = B00001111;
 
 int matrix[8];
 LedControl lc = LedControl(data_in, clk, cs, 4);
@@ -70,6 +69,7 @@ void setup() {
   pinMode(warning_led_1, OUTPUT);
   pinMode(warning_led_2, OUTPUT);
   pinMode(warning_led_3, OUTPUT);
+  pinMode(alarm_2_display_led, OUTPUT);
   for (byte i = 0; i < 4; i++) {
     (i < module_count) ? lc.shutdown(i, false) : lc.shutdown(i, true);
     lc.setIntensity(i, brightness); //maximum brightness is 15
@@ -122,7 +122,12 @@ void loop() {
       alarm = 0; digitalWrite(buzzer, 0); digitalWrite(warning_led_3, LOW);
     }
     if (menu_count == 2) clock.armAlarm1(!clock.isArmed1());
-    if (menu_count == 5 || menu_count == 4) clock.armAlarm2(!clock.isArmed2());
+    if (menu_count == 5 || menu_count == 4) {
+      clock.armAlarm2(!clock.isArmed2());
+      digitalWrite(warning_led_1, LOW);
+      digitalWrite(warning_led_2, LOW);
+      digitalWrite(warning_led_3, LOW);
+    }
     snooze = 0; m3 = millis();
   }
 
@@ -130,7 +135,6 @@ void loop() {
     if (menu_count == 4) menu_count = 5;
     else if (menu_count == 5) menu_count = 1;
     else menu_count = 4;
-    (menu < 4)? digitalWrite(alarm_2_display_led, LOW) : digitalWrite(alarm_2_display_led, HIGH);
     m3 = millis();
   }
 
@@ -147,11 +151,10 @@ void loop() {
     int end_diff = t_diff(s_alarm_2, current_time);
     (start_diff < d_time && end_diff >= 20) ? digitalWrite(warning_led_1, HIGH) : digitalWrite(warning_led_1, LOW);
     (end_diff < 20 && end_diff > 0) ? digitalWrite(warning_led_2, HIGH) : digitalWrite(warning_led_2, LOW);
-    if(end_diff !=0) digitalWrite(warning_led_3, LOW); 
-    if (end_diff == 0 && !alarm) {
+    if (end_diff != 0) digitalWrite(warning_led_3, LOW);
+    if (end_diff == 0 && ss == 0) {
       alarm = 1; //triggering the alarm
-      if (!snooze) snooze_count = maximum_snooze_count;
-      snooze = 0; digitalWrite(warning_led_3, HIGH); 
+      snooze_count = maximum_snooze_count; snooze = 0; digitalWrite(warning_led_3, HIGH);
       m2 = millis(); //for keeping the track of mute timer
     }
   }
@@ -159,8 +162,6 @@ void loop() {
   if (alarm) alarm_function();
 
   //menu display
-  if (millis() - m3 > menu_time * 1000 && menu_count != 1){
-    menu_count = 1; digitalWrite(alarm_2_display_led, LOW);
-  }
+  if (millis() - m3 > menu_time * 1000 && menu_count != 1) menu_count = 1;
   menu(menu_count); //refreshing the display
 }
