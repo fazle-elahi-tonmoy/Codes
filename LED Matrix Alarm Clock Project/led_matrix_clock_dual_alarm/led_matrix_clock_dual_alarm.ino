@@ -89,7 +89,7 @@ void loop() {
       if (menu_count > menu_limit) menu_count = 1;
     }
     else {
-      alarm = 0; digitalWrite(buzzer, 0);
+      alarm = 0; digitalWrite(buzzer, 0); digitalWrite(warning_led_3, LOW);
       if (snooze_count > 0) {
         snooze_count --;
         snooze = menu_button_snooze; //alarm will snooze if menu button is pressed
@@ -102,7 +102,7 @@ void loop() {
   byte r = long_press();
   if (r == 1) {
     if (alarm) {
-      alarm = 0; digitalWrite(buzzer, 0); snooze = 0;
+      alarm = 0; digitalWrite(buzzer, 0); snooze = 0; digitalWrite(warning_led_3, LOW);
     }
     if (menu_count == 1) {
       ss = 1; clock_update();
@@ -118,7 +118,7 @@ void loop() {
   }
   else if (r == 2) {
     if (alarm) {
-      alarm = 0; digitalWrite(buzzer, 0);
+      alarm = 0; digitalWrite(buzzer, 0); digitalWrite(warning_led_3, LOW);
     }
     if (menu_count == 2) clock.armAlarm1(!clock.isArmed1());
     if (menu_count == 5 || menu_count == 4) clock.armAlarm2(!clock.isArmed2());
@@ -143,13 +143,13 @@ void loop() {
     d_time = t_diff(s_alarm_2, s_alarm_1); current_time = get_time();
     int start_diff = t_diff(current_time, s_alarm_1);
     int end_diff = t_diff(s_alarm_2, current_time);
-    (start_diff < 10) ? digitalWrite(warning_led_1, HIGH) : digitalWrite(warning_led_1, LOW);
-    (start_diff >= 10 && end_diff < d_time && end_diff >= 10) ? digitalWrite(warning_led_2, HIGH) : digitalWrite(warning_led_2, LOW);
-    (end_diff < 10 && end_diff > 0) ? digitalWrite(warning_led_3, HIGH) : digitalWrite(warning_led_3, LOW);
+    (start_diff < d_time && end_diff >= 20) ? digitalWrite(warning_led_1, HIGH) : digitalWrite(warning_led_1, LOW);
+    (end_diff < 20 && end_diff > 0) ? digitalWrite(warning_led_2, HIGH) : digitalWrite(warning_led_2, LOW);
+    if(end_diff !=0) digitalWrite(warning_led_3, LOW); 
     if (end_diff == 0 && !alarm) {
       alarm = 1; //triggering the alarm
       if (!snooze) snooze_count = maximum_snooze_count;
-      snooze = 0;
+      snooze = 0; digitalWrite(warning_led_3, HIGH); 
       m2 = millis(); //for keeping the track of mute timer
     }
   }
