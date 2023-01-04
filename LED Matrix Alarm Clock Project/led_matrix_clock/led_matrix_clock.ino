@@ -14,10 +14,10 @@ RTCAlarmTime a1;
 #define brightness 1 //minimum is 1, maximum is 15
 
 //this is for push buttons and buzzer
-#define menu_button 7 //this will shuffle the menu or bring back to menu
-#define set_button 11 //this will engage or change a value
+#define menu_button 2 //this will shuffle the menu or bring back to menu
+#define set_button 12 //this will engage or change a value
 #define led 13 //to ensure if the button is pressed
-#define buzzer 2 //don't set this as same as led pin
+#define buzzer 13 //don't set this as same as led pin
 #define long_press_timer 1 //minimum second pressing required to register a long press
 
 //define how your alarm will behave
@@ -122,5 +122,6 @@ void loop() {
     snooze = 0;
     m2 = millis(); //for keeping the track of mute timer
   }
+  Serial.println(clock.isAlarm1());
   if (alarm) alarm_function();
 }
