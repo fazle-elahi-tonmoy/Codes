@@ -1,6 +1,17 @@
 void snake_game() {
   bool menu = 1;
   while (digitalRead(mb) == HIGH) {
+    display.clearDisplay();
+    text("GAME MODE?", 04, 0);
+    text("   EASY   ", 04, 25);
+    text("   HARD   ", 04, 50);
+    (dl == 100) ? text(">>      <<", 04, 25) : text(">>      <<", 04, 50);
+    display.display();
+    if (digitalRead(ub) == LOW) dl = 50;
+    else if (digitalRead(db) == LOW) dl = 100;
+  }
+  while (digitalRead(mb) == LOW);
+  while (digitalRead(mb) == HIGH) {
 r:  if (eat == 1) {
       food();
       digitalWrite(buzzer, HIGH);
@@ -67,15 +78,15 @@ void button() {
   while (m82 - m81 < dl) {
     m82 = millis();
     if (digitalRead(ub) == LOW && s_b == 0) {
-      dir++; s_b = 1;
+      dir++; s_b = 1; delay(5);
     }
     if (digitalRead(db) == LOW && s_b == 0) {
-      dir--; s_b = 1;
+      dir--; s_b = 1; delay(5);
     }
     if (digitalRead(ub) == HIGH && digitalRead(db) == HIGH) s_b = 0;
     if (dir < 1) dir = 4;
     else if (dir > 4) dir = 1;
-    if(m82 - m81 > 20) digitalWrite(buzzer, LOW);
+    if(m82 - m81 < 20) digitalWrite(buzzer, LOW);
   }
 }
 

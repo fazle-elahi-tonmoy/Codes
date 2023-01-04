@@ -10,16 +10,16 @@ void algorithm() {
       a++;
     }
   }
-  
+
   s = a = EEPROM.read(6);
   while (scan[s] != 0) {
     if (scan[a + 1] == 4) {
-      scan[s] = scan[s] + scan[a + 2];
       a += 2;
+      scan[s] = scan[s] + scan[a];
     }
     if (scan[s] == 4) {
-      scan[s - 1] = scan[s - 1] + scan[a + 1];
       s--; a++;
+      scan[s] = scan[s] + scan[a];
     }
     else {
       s++; a++;

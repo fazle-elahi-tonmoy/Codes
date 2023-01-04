@@ -1,11 +1,11 @@
 void cal() {
   byte i = 0;
-  motorSpeedL(100, 100);
+  mos(-100, 100);
   for (short int c = 0; c < 3000 ; c++)
     for (i = 0; i < 6; i++) {
-      sensor[i] = analogRead(i + 8);
-      maximum[i] = max(maximum[i], sensor[i]);
-      minimum[i] = min(minimum[i], sensor[i]);
+      s[i] = analogRead(i + 8);
+      maximum[i] = max(maximum[i], s[i]);
+      minimum[i] = min(minimum[i], s[i]);
     }
   mos(0, 0);
   for (i = 0; i < 6; i++) {
@@ -23,11 +23,11 @@ void check()
   sum = 0;
   bin = 0;
   for (byte i = 0; i < 6; i++) {
-    sensor[i] = analogRead(i + 8);
-    if (mode == 1) (sensor[i] > trash[i]) ? sensor[i] = 1 : sensor[i] = 0 ;
-    else if (mode == 0) (sensor[i] < trash[i]) ? sensor[i] = 1 : sensor[i] = 0 ;
-    sum += sensor[i];
-    bin += sensor[i] * bina[i];
+    s[i] = analogRead(i + 8);
+    if (mode == 1) (s[i] > trash[i]) ? s[i] = 1 : s[i] = 0 ;
+    else if (mode == 0) (s[i] < trash[i]) ? s[i] = 1 : s[i] = 0 ;
+    sum += s[i];
+    bin += s[i] * bina[i];
   }
   return;
 }

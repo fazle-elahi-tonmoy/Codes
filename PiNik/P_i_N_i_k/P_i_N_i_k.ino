@@ -1,6 +1,6 @@
-#include<EEPROM.h>
-#include<NewPing.h>
-#include<Servo.h>
+#include <EEPROM.h>
+#include <NewPing.h>
+#include <Servo.h>
 #include <Adafruit_SSD1306.h>
 Adafruit_SSD1306 display(128, 64, &Wire, 4);
 
@@ -15,7 +15,7 @@ Servo rfang;
 #define trigr 52
 #define ecor 50
 short int midpoint = 16, wallp = 8, error = 0;
-byte sf, sl, sr, object_boundary = 15 , wall_boundary = 15, o_direction;
+byte sf, sl, sr, object_boundary = 15, wall_boundary = 15, o_direction;
 NewPing sonarl(trigl, ecol, 90);
 NewPing sonarf(trigf, ecof, 90);
 NewPing sonarr(trigr, ecor, 90);
@@ -24,7 +24,7 @@ NewPing sonarr(trigr, ecor, 90);
 byte lmf, lmb, rmf, rmb, lvalue = 32, rvalue = 65;
 
 //for servos
-byte intl = 150, intr = 30, fl = 80, fr = 100, fang = 0;
+byte intl = 80, intr = 130, fl = 30, fr = 80, fang = 0;
 
 
 //for leds and switches
@@ -52,24 +52,24 @@ unsigned int base = 160, peak = 520, cl, brake, o1, o2, rotation;
 byte side = 0, tcount = 0, mode = 1, trigger = 1, turn = 0, direct = 111;
 
 //for 30 & 90 degree and other logic
-byte k30 = 0, k90 = 0, mov = 0, cross = 0;
+byte mov = 0, cross = 0;
 unsigned long mi1 = 0, mi2 = 0, m81 = 0, m82 = 0, mi3 = 0, mi4 = 0;
 
 //for ir sensor logic
-byte bin = 0, sum = 0, bina[] = {1, 2, 4, 8, 16, 32};
-short int sensor[6];
+byte bin = 0, sum = 0, bina[] = { 1, 2, 4, 8, 16, 32 };
+short int s[6];
 
 //for calibration & store
-short int minimum[6] = {1023, 1023, 1023, 1023, 1023, 1023};
-short int maximum[6] = {0, 0, 0, 0, 0, 0};
-short int trash[6] = {500, 500, 500, 500, 500, 500};
+short int minimum[6] = { 1023, 1023, 1023, 1023, 1023, 1023 };
+short int maximum[6] = { 0, 0, 0, 0, 0, 0 };
+short int trash[6] = { 500, 500, 500, 500, 500, 500 };
 float cal_p = 0.5, line_p;
 
 //for maze solving
 byte scan[255], m_base = 50;
 
 //for snake game
-short int pos[400] = {600, 400, 200, 000};
+short int pos[400] = { 600, 400, 200, 000 };
 short int foodx, foody, dir = 3, len = 4, dl = 100;
 bool eat = 1, s_b = 0;
 
@@ -103,7 +103,8 @@ void setup() {
   o_direction = (direct % 100) / 10;
   trigger = direct % 10;
   state = EEPROM.read(10);
-  fang = state / 10; head = state % 10;
+  fang = state / 10;
+  head = state % 10;
 
   d = EEPROM.read(11);
   base = EEPROM.read(12) * d * 10;
@@ -127,8 +128,11 @@ void setup() {
   line_d = EEPROM.read(31);
   lvalue = EEPROM.read(36);
   rvalue = EEPROM.read(37);
-  lmf = lvalue / 10; lmb = lvalue % 10; rmf = rvalue / 10; rmb = rvalue % 10;
-  Serial.begin(38400);
+  lmf = lvalue / 10;
+  lmb = lvalue % 10;
+  rmf = rvalue / 10;
+  rmb = rvalue % 10;
+  Serial.begin(9600);
 
   lfang.attach(4);
   rfang.attach(7);
@@ -136,23 +140,12 @@ void setup() {
   (fang == 0) ? rfang.write(intr) : rfang.write(fr);
   head_light(head);
   pinik();
-
 }
 
 void loop() {
   byte r = getclickup();
   if (r != 0) {
-    if (r == 1) {
-      byte c = 0;
-      while (digitalRead(mb) == HIGH) {
-        display.clearDisplay();
-        (c == 0) ? text("FREE STYLE", 04, 24) : text("FIXED RUN", 10, 26);
-        display.display();
-        if (digitalRead(ub) == LOW) c = 1;
-        else if (digitalRead(db) == LOW) c = 0;
-      }
-      if (long_press(0) == 0) (c == 0) ? line_follow(0, 0) : line_solve(0, 0);
-    }
+    if (r == 1) line_func();
     else if (r == 2) maze_func();
     else if (r == 3) counter_display(0, 1);
     else if (r == 4) {
@@ -162,8 +155,7 @@ void loop() {
       delay(500);
       while (digitalRead(mb) == HIGH) mos(10 * sp, 10 * sp);
       while (digitalRead(mb) == LOW) mos(0, 0);
-    }
-    else if (r == 5) side_selection(0);
+    } else if (r == 5) side_selection(0);
     pinik();
   }
   r = getclickdown();
@@ -173,7 +165,8 @@ void loop() {
     else if (r == 3) braking();
     else if (r == 4) other();
     else if (r == 5) control_system();
-    while (digitalRead(mb) == LOW);
+    while (digitalRead(mb) == LOW)
+      ;
     pinik();
   }
   getclickmid();

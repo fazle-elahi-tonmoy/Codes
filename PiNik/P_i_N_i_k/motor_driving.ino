@@ -20,43 +20,12 @@ void mos(short int a , short int b) {
   return ;
 }
 
-void motorSpeedB(short int a, short int b) {
-  mos(-a, -b);
-}
-
-void motorSpeedR(short int a, short int b) {
-  mos(a, -b);
-}
-
-void motorSpeedL(short int a, short int b) {
-  mos(-a, b);
-}
-
 void braking_mechanism(float a) {
-  if (cl != 0)motorSpeedB(250, 250);
+  if (cl != 0)mos(-250, -250);
   brake = cl / d;
   delay(a * brake);
-  k30 = 0;
-  k90 = 0;
-  mov = 0;
-  cross = 0;
   cl = base;
   k = 0;
-}
-
-void head_light(byte a) {
-  if (a == 1) {
-    digitalWrite(head_left1, HIGH);
-    digitalWrite(head_right1, HIGH);
-    digitalWrite(head_left2, HIGH);
-    digitalWrite(head_right2, HIGH);
-  }
-  else {
-    digitalWrite(head_left1, LOW);
-    digitalWrite(head_right1, LOW);
-    digitalWrite(head_left2, LOW);
-    digitalWrite(head_right2, LOW);
-  }
 }
 
 void motor_direction() {

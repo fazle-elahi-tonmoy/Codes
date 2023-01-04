@@ -54,8 +54,8 @@ void sonarfront(byte a) {
   if (sf < wall_boundary && sf > 0) {
     mos(-150, -150);
     delay((peak + base) / (2 * d));
-    (a == 2) ? motorSpeedL(150, 150) : motorSpeedR(150, 150); delay(rotation);
-    (a == 1) ? motorSpeedL(150, 150) : motorSpeedR(150, 150); delay(br);
+    (a == 2) ? mos(-150,150) : mos(150,-150); delay(rotation);
+    (a == 1) ? mos(-150,150) : mos(150,-150); delay(br);
     mos(150, 150);
     sf = 0; sl = sr = midpoint;
   }
