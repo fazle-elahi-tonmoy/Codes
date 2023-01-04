@@ -72,7 +72,7 @@ void display_value(int a) {
   }
 
   if (ss % 2 && menu_count == 1) matrix[7] |= second_symbol_2;
-  if (clock.isArmed1()) matrix[7] |= alarm_symbol;
+  if (alarm_trigger) matrix[7] |= alarm_symbol;
   for (byte i = 0; i < 8; i++) lc.setRow(0, i, matrix[i]);
   for (byte i = 0; i < 8; i++) matrix[i] = 0;
 

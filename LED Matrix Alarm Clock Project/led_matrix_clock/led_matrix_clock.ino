@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <DS3231.h>
+#include <EEPROM.h>
 DS3231 clock;
 RTCDateTime dt;
 RTCAlarmTime a1;
@@ -13,10 +14,10 @@ RTCAlarmTime a1;
 #define brightness 1 //minimum is 1, maximum is 15
 
 //this is for push buttons and buzzer
-#define menu_button 2 //this will shuffle the menu or bring back to menu
-#define set_button 12 //this will engage or change a value
+#define menu_button 7 //this will shuffle the menu or bring back to menu
+#define set_button 11 //this will engage or change a value
 #define led 13 //to ensure if the button is pressed
-#define buzzer 13 //don't set this as same as led pin
+#define buzzer 2 //don't set this as same as led pin
 #define long_press_timer 1 //minimum second pressing required to register a long press
 
 //define how your alarm will behave
@@ -39,7 +40,7 @@ byte menu_limit = 2; //if you want to see date also, put value 3
 int current_time;
 int current_alarm;
 int current_date;
-bool alarm;
+bool alarm, alarm_trigger = 0;
 int hh, mm, ss, DD, MM, YY;
 uint32_t m1, m2, m3, sz, al = millis();
 byte pm_symbol = B11110000;
@@ -63,6 +64,8 @@ void setup() {
   Serial.begin(9600);
   clock.begin();
   mute_timer = mute_timer * 1000;
+  alarm_trigger = EEPROM.read(0);
+  if (alarm_trigger != 0) alarm_trigger = 1;
 }
 
 void loop() {
@@ -101,7 +104,10 @@ void loop() {
     if (alarm) {
       alarm = 0; digitalWrite(buzzer, 0);
     }
-    if (menu_count == 2) clock.armAlarm1(!clock.isArmed1());
+    if (menu_count == 2) {
+      alarm_trigger = !alarm_trigger;
+      EEPROM.update(0, alarm_trigger);
+    }
     snooze = 0; m3 = millis();
   }
 
@@ -110,12 +116,11 @@ void loop() {
   menu(menu_count); //refreshing the display
 
   //triggering the alarm
-  if ((clock.isArmed1() && clock.isAlarm1()) || (snooze && millis() - sz > snooze_time * 60000)) {
+  if ((alarm_trigger && clock.isAlarm1()) || (snooze && millis() - sz > snooze_time * 60000)) {
     alarm = 1; //triggering the alarm
     if (!snooze) snooze_count = maximum_snooze_count;
     snooze = 0;
     m2 = millis(); //for keeping the track of mute timer
   }
-  Serial.println(String(clock.isArmed1()) + " " + String(clock.isAlarm1()));
   if (alarm) alarm_function();
 }
