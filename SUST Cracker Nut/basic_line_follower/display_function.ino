@@ -18,42 +18,11 @@ void sust_cracker_nut() {
   display.display();
 }
 
-void text_battery_check() {
-  display.clearDisplay();
-  //  int p = analogRead(8);
-  int p = map(analogRead(8), 740, 1023, 0, 100);
-  if (p < 0) p = 0;
-  String value = String(p, 10);
-  text("BATTERY", 23, 16);
-  if (p >= 100) {
-    text(value, 43, 42);
-    text("%", 80, 42);
-  }
-  else {
-    text(value, 47, 42);
-    text("%", 73, 42);
-  }
-  //  text(value, 43, 24);
-  display.display();
-}
-
-void text_battery_low() {
-  int p = map(analogRead(8), 740, 1023, 0, 100);
-  if (p < 0) p = 0;
-  display.clearDisplay();
-  String value = String(p, 10);
-  text("BATTERY", 23, 2);
-  text("LOW", 43, 24);
-  text(value, 43, 46);
-  text("%", 80, 42);
-  display.display();
-}
-
 void analog_reading_display() {
   int s[] = {0, 0, 0, 0, 0, 0};
   display.clearDisplay();
   for (int i = 0; i < 6; i++) {
-    s[i] = analogRead(i + 10);
+    s[i] = analogRead(i);
   }
   for (int i = 0; i < 3 ; i++) {
     String value = String(s[i], 10);
@@ -192,8 +161,7 @@ void text_callibrating() {
   display.drawLine(0, 20, 128, 20, WHITE);
   display.drawLine(0, 43, 128, 43, WHITE);
   display.display();
-  delay(500);
+  while (digitalRead(calin) == HIGH);
   while (digitalRead(calin) == LOW);
 
 }
-

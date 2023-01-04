@@ -1,11 +1,12 @@
 void remote_control() {
+  int lowlimit = 40;
   while (digitalRead(calin) == LOW && digitalRead(switchin) == LOW) {
     if (Serial.available() > 0) {
       char data =  Serial.read();
       if (data == 'F')      mos(10 * spr, 10 * spl);
       else if (data == 'B') motorSpeedB(10 * spr, 10 * spl);
-      else if (data == 'L') motorSpeedL(6 * spr, 6 * spl);
-      else if (data == 'R') motorSpeedR(6 * spr, 6 * spl);
+      else if (data == 'L') motorSpeedL(10 * spr,  10 * spl);
+      else if (data == 'R') motorSpeedR(10 * spr,  10 * spl);
       else if (data == 'G') mos(10 * spr, 0);
       else if (data == 'I') mos(0, 10 * spl);
       else if (data == 'H') motorSpeedB(10 * spr, 0);
@@ -36,14 +37,5 @@ void remote_control() {
       else if (data == 'i') handle.write(10);
       else if (data == 'j') handle.write(0);
     }
-//    int p = map(analogRead(8), 740, 1023, 0, 100);
-//    if (p <= 20) {
-//      motorSpeedS();
-//      while (digitalRead(switchin) == LOW) text_battery_low();
-//      while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
-//      digitalWrite(calout, LOW);
-//      break;
-//    }
   }
 }
-

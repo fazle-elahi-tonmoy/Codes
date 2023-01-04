@@ -1,12 +1,12 @@
 void braking_adjust() {
 a:
-  int list = 5;
+  int list = 9;
   int p = 0;
   int q = 0;
   int temp = 0;
   while (digitalRead(switchin) == LOW) {
     delay(1);
-    p = map(analogRead(9), 20, 1023, 1, list);
+    p = map(analogRead(10), 0, 1020, 1, list);
     if (temp != p) {
       temp = p;
       if (temp == 1) {
@@ -64,11 +64,56 @@ a:
         else text(value, 47, 46);
         display.display();
       }
+      else if (temp == 6) {
+        display.clearDisplay();
+        text("  OBJECT  ", 04, 2);
+        text(" BOUNDARY ", 04, 24);
+        q = EEPROM.read(16);
+        String value = String(q, 10);
+        if (q < 10) text(value, 59, 46);
+        else if ( q < 100) text(value, 53, 46);
+        else text(value, 47, 46);
+        display.display();
+      }
+      else if (temp == 7) {
+        display.clearDisplay();
+        text("   WALL   ", 04, 2);
+        text(" BOUNDARY ", 04, 24);
+        q = EEPROM.read(17);
+        String value = String(q, 10);
+        if (q < 10) text(value, 59, 46);
+        else if ( q < 100) text(value, 53, 46);
+        else text(value, 47, 46);
+        display.display();
+      }
+      else if (temp == 8) {
+        display.clearDisplay();
+        text("   WALL   ", 04, 2);
+        text(" MIDPOINT ", 04, 24);
+        q = EEPROM.read(18);
+        String value = String(q, 10);
+        if (q < 10) text(value, 59, 46);
+        else if ( q < 100) text(value, 53, 46);
+        else text(value, 47, 46);
+        display.display();
+      }
+      else if (temp == 9) {
+        display.clearDisplay();
+        text("CALLIBRATE", 04, 2);
+        text("PROPORTION", 04, 24);
+        q = EEPROM.read(19);
+        String value = String(q, 10);
+        if (q < 10) text(value, 59, 46);
+        else if ( q < 100) text(value, 53, 46);
+        else text(value, 47, 46);
+        display.display();
+      }
     }
     if (digitalRead(calin) == HIGH) {
       display.clearDisplay();
       text("BYE!!!", 23, 24);
       display.display();
+      delay(300);
       return;
     }
   }
@@ -80,11 +125,13 @@ a:
   digitalWrite(calout, LOW);
 
   while (1) {
-    if (temp == 1) p = map(analogRead(9), 0, 1023, 0, 100);
-    else if (temp == 2) p = map(analogRead(9), 0, 1023, 100, 200);
-    else if (temp == 3) p = map(analogRead(9), 0, 1023, 1, 9);
-    else if (temp == 4) p = map(analogRead(9), 0, 1023, 0, 100);
-    else if (temp == 5) p = map(analogRead(9), 0, 1023, 50, 200);
+    if (temp == 1) p = map(analogRead(10), 0, 1020, 0, 100);
+    else if (temp == 2) p = map(analogRead(10), 0, 1020, 100, 250);
+    else if (temp == 3) p = map(analogRead(10), 0, 1020, 1, 9);
+    else if (temp == 4) p = map(analogRead(10), 0, 1020, 0, 250);
+    else if (temp == 5) p = map(analogRead(10), 0, 1020, 0, 250);
+    else if (temp >= 6 && temp <= 8) p = map(analogRead(10), 0, 1020, 0, 30);
+    else if (temp == 9) p = map(analogRead(10), 0, 1020, 1, 9);
     display.clearDisplay();
     String value = String(p, 10);
     text("ADJUST:", 5, 24);
@@ -94,6 +141,7 @@ a:
       display.clearDisplay();
       text("BYE!!!", 29, 24);
       display.display();
+      delay(300);
       goto a;
     }
     if (digitalRead(switchin) == HIGH) {
@@ -103,11 +151,8 @@ a:
       display.clearDisplay();
       text("OKAY!!!", 29, 24);
       display.display();
-      if (temp == 1) EEPROM.write(11, p);
-      else if (temp == 2) EEPROM.write(12, p);
-      else if (temp == 3) EEPROM.write(13, p);
-      else if (temp == 4) EEPROM.write(14, p);
-      else if (temp == 5) EEPROM.write(15, p);
+      delay(300);
+      EEPROM.write(temp + 10, p);
       delay(10);
       btd = EEPROM.read(11);
       mtd = EEPROM.read(12);
@@ -116,7 +161,24 @@ a:
       peak = EEPROM.read(15) * d;
       cl = base;
       brake = cl / d;
+      object_boundary = EEPROM.read(16);
+      wall_boundary = EEPROM.read(17);
+      midpoint = EEPROM.read(18);
+      cal_p = EEPROM.read(19) * 0.1;
       goto a;
     }
   }
+}
+
+void braking_mechanism() {
+  motorSpeedB(10 * spr, 10 * spl);
+  brake = cl / d;
+  delay(brake);
+  k30 = 0;
+  k90 = 0;
+  mov = 0;
+  cross = 0;
+  cl = base;
+  brake = cl / d;
+  k = 0;
 }
