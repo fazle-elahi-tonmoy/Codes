@@ -95,12 +95,7 @@ void basic_line_follow() {
         k = -5;
       }
       mos((9 - 4 * line_p) * sp, 10 * sp);
-    } 
-    
-    else if (s[5] && s[0]) mos(10 * sp, 10 * sp);
-    else if (s[5]) mos((9 - 4 * line_p) * sp, 10 * sp);
-    else if (s[0]) mos(10 * sp, (9 - 4 * line_p) * sp);
-
+    }
 
   }  //end of while loop!!!!!
 

@@ -139,7 +139,7 @@ byte long_press(byte a) {
     delay(1);
     if (p >= 500) {
       digitalWrite(buzzer, HIGH);
-      display.clearDisplay();
+      display.clearDisplay();-
       text("  BYE!!!  ", 04, 25);
       display.display();
       while (digitalRead(mb) == LOW);
