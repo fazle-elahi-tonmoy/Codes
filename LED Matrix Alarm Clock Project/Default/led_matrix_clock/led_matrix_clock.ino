@@ -2,35 +2,45 @@
 #include <DS3231.h>
 DS3231 clock;
 RTCDateTime dt;
+RTCAlarmTime a1;
 #include "LedControl.h"
 
 //this is for LED Matrix
-#define data_in 16
-#define clk 14
+#define data_in 14
+#define clk 16
 #define cs 15
-#define module_count 2
+#define module_count 2 //for smaller display
 
-//this is for push buttons
-#define menu_button 2
-#define set_button 12
+//this is for push buttons and buzzer
+#define menu_button 11 //this will shuffle the menu or bring back to menu
+#define set_button 7 //this will engage or change a value
 #define led 13 //to ensure if the button is pressed
-#define long_press_timer 500
+#define long_press_timer 500 //minimum time required to register a long press
+#define buzzer 2 //don't set this as same as led pin
+
+//define how your alarm will behave
+#define beeping_interval 100 //set this higher for slower alarm tone
+//turn off the alarm automatically if you don't press anything in 60 seconds
+#define mute_timer 60  //set the value to 0 if you want to keep going permanently, 
 
 //for co-ordination purpose, dont change this
 byte menu_count = 1;
-bool stability = 1;
-byte menu_limit = 2;
+byte menu_limit = 2; //if you want to see date also, put value 3
 
 //this is for clock calculation
 int current_time;
+int current_alarm;
 int current_date;
-int clock_time;
+bool alarm;
 int hh, mm, ss, DD, MM, YY;
-uint32_t m1, m2, m3;
+uint32_t m1, m2, al = millis();
 
 int matrix[8];
 LedControl lc = LedControl(data_in, clk, cs, 4);
+
 void setup() {
+  pinMode(buzzer, OUTPUT);
+  pinMode(led, OUTPUT);
   pinMode(menu_button, INPUT_PULLUP);
   pinMode(set_button, INPUT_PULLUP);
   for (byte i = 0; i < 4; i++) {
@@ -40,22 +50,34 @@ void setup() {
   }
   Serial.begin(9600);
   clock.begin();
-  // Manual (YYYY, MM, DD, HH, II, SS)
-  // clock.setDateTime(2014, 4, 13, 19, 21, 00);
 
 }
 
 void loop() {
   if (menu_press(2)) {
-    menu_count++; stability = 1;
-    if (menu_count > menu_limit) menu_count = 1;
+    if (!alarm) {
+      menu_count++;
+      if (menu_count > menu_limit) menu_count = 1;
+    }
+    alarm = 0; digitalWrite(buzzer, 0);
   }
-  if (set_press(0) == 1) {
-    lc.shutdown(1, 1);
+  byte r = set_press(0);
+  if (r == 1) {
+    lc.shutdown(1, 1); alarm = 0; digitalWrite(buzzer, 0);
     while (!digitalRead(set_button));
     if (menu_count == 1) set_time();
+    if (menu_count == 2) set_alarm();
+    if (menu_count == 3) set_date();
     while (!digitalRead(menu_button));
   }
-  menu(menu_count);
-  Serial.println(ss%2);
+  if (r == 2) {
+    alarm = 0; digitalWrite(buzzer, 0);
+    if (menu_count == 2) clock.armAlarm1(!clock.isArmed1());
+  }
+  menu(menu_count); //refreshing the display
+  if (clock.isAlarm1()){
+    alarm = 1; //triggering the alarm
+    m2 = millis(); //for keeping the track of snooze timer
+  }
+  if (alarm) alarm_function();
 }

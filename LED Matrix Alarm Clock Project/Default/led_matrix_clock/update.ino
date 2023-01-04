@@ -3,10 +3,12 @@ void clock_update() {
   display_value(current_time);
 }
 
+void alarm_update() {
+  current_alarm = get_alarm();
+  display_value(current_alarm);
+}
+
 void date_update() {
-  if (current_date != get_date() || stability) {
-    stability = 0;
-    current_date = get_date();
-    display_value(current_date);
-  }
+  current_date = get_date();
+  display_value(current_date);
 }
