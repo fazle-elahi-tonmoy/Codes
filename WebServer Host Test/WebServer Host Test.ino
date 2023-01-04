@@ -2,8 +2,9 @@
 const char* ssid = "The Tiny Bear";
 const char* password = "bolajabena";
 
-int ledpin = 13;  // D4 in ModeMcu
-WiFiServer server(80);
+int ledpin = 13;
+int value;
+WiFiServer server;
 WiFiClient client;
 
 void setup() {
@@ -35,20 +36,17 @@ void loop() {
   Serial.println("new client");
   while (!client.available()) delay(1);
 
-  String request = client.readStringUntil('\r');
-  Serial.println(request);
-  client.flush();
-
-  int value = LOW;
-  if (request.indexOf(" /LED=ON") != -1) {
-    digitalWrite(ledpin, 1);
-    value = HIGH;
-  }
-
-  if (request.indexOf(" /LED=OFF") != -1) {
-    digitalWrite(ledpin, 0);
-    value = LOW;
-  }
+  // String request = client.readStringUntil('\r');
+  // Serial.println(request);
+  // client.flush();
+  // if (request.indexOf(" /LED=ON") != -1) {
+  //   digitalWrite(ledpin, 1);
+  //   value = HIGH;
+  // }
+  // if (request.indexOf(" /LED=OFF") != -1) {
+  //   digitalWrite(ledpin, 0);
+  //   value = LOW;
+  // }
 
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
