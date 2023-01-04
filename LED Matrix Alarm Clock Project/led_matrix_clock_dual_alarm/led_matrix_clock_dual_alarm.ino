@@ -78,9 +78,9 @@ void setup() {
   Serial.begin(9600);
   clock.begin();
   mute_timer = mute_timer * 1000;
-  special_alarm_update_1();
-  special_alarm_update_2();
-
+  current_alarm = get_alarm();
+  s_alarm_1 = get_initial();
+  s_alarm_2 = get_alarm_2();
 }
 
 void loop() {
@@ -138,12 +138,21 @@ void loop() {
     m3 = millis();
   }
 
-  //triggering the alarm
-  if ((clock.isArmed1() && clock.isAlarm1()) || (snooze && millis() - sz > snooze_time * 60000)) {
+  if (snooze && millis() - sz > snooze_time * 60000) {
     alarm = 1; //triggering the alarm
-    if (!snooze) snooze_count = maximum_snooze_count;
     snooze = 0;
     m2 = millis(); //for keeping the track of mute timer
+  }
+
+  //triggering the alarm
+  if (clock.isArmed1()) {
+    current_time = get_time(); 
+    int diff =  t_diff(current_time, current_alarm);
+    if (diff == 0 && ss == 0) {
+      alarm = 1; //triggering the alarm
+      snooze_count = maximum_snooze_count; snooze = 0;
+      m2 = millis(); //for keeping the track of mute timer
+    }
   }
   if (clock.isArmed2()) {
     d_time = t_diff(s_alarm_2, s_alarm_1); current_time = get_time();
@@ -158,7 +167,7 @@ void loop() {
       m2 = millis(); //for keeping the track of mute timer
     }
   }
-  Serial.println(String(clock.isArmed1()) + " " + String(clock.isAlarm1()));
+//  Serial.println(String(clock.isArmed1()));
   if (alarm) alarm_function();
 
   //menu display

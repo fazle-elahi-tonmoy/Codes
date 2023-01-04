@@ -24,7 +24,8 @@ void set_alarm2() {
     }
     if (millis() - m3 > return_time * 1000) {
       lc.shutdown(panel_section, 0);
-      menu_count = 1; return;
+      menu_count = 1; s_alarm_2 = get_alarm_2();
+      return;
     }
   }
   menu_count = 1;
@@ -60,7 +61,8 @@ void set_start_time() {
     }
     if (millis() - m3 > return_time * 1000) {
       lc.shutdown(panel_section, 0);
-      menu_count = 1; return;
+      menu_count = 1; s_alarm_1 = get_initial();
+      return;
     }
   }
   menu_count = 1;

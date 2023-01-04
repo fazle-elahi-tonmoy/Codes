@@ -59,7 +59,8 @@ void set_alarm() {
     }
     if (millis() - m3 > return_time * 1000) {
       lc.shutdown(panel_section, 0);
-      menu_count = 1; return;
+      menu_count = 1; current_alarm = get_alarm();
+      return;
     }
   }
   menu_count = 1;
