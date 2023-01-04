@@ -80,17 +80,17 @@ int menu_function2() {
           text("SETUP", 35, 42);
           display.display();
         }
-        else if (temp == 2) text_speed_adjust();
-        else if (temp == 3) {
-          display.clearDisplay();
-          text("SERVO", 35, 16);
-          text("ADJUST", 29, 42);
-          display.display();
-        }
-        else if (temp == 4) {
+        else if (temp == 2) {
           display.clearDisplay();
           text("BATTERY", 23, 16);
           text("CHECK", 35, 42);
+          display.display();
+        }
+        else if (temp == 3) text_speed_adjust();
+        else if (temp == 4) {
+          display.clearDisplay();
+          text("BRAKING", 23, 16);
+          text("MECHANISM", 11, 42);
           display.display();
         }
         else if (temp == 5) {

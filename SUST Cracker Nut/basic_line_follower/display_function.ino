@@ -95,7 +95,10 @@ void text_line_follow() {
 
 void text_wall_follow() {
   display.clearDisplay();
-  text("WallFollow", 4, 24);
+  text("WallFollow", 4, 16);
+  text("Counter:", 10, 42);
+  String value = String(counter, 10);
+  text(value, 104, 42);
   display.display();
 }
 

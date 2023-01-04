@@ -36,7 +36,7 @@ NewPing sonarr(trr, ecr, 90);
 int spl = 25;
 int spr = 22;
 int btd = 60;
-#define mtd 200
+int mtd = 200;
 #define dt 10
 #define br 40
 int k = 0;
@@ -154,7 +154,6 @@ void motorSpeedB(int speedA, int speedB) {
 }
 
 void motorSpeedS() {
-
   digitalWrite(n2, LOW);
   digitalWrite(n3, LOW);
   digitalWrite(n1, LOW);
@@ -169,18 +168,13 @@ void motorSpeedS() {
 
 void cal() {
   digitalWrite(calout, HIGH);
-  //  text_callibrating();
   motorSpeedR(250, 250);
-  int c = 0;
-  while (c < 10000) {
+  for (int c = 0; c < 10000 ; c++)
     for (int i = 0; i < 6; i++) {
       sensor[i] = analogRead(i + 10);
       maximum[i] = max(maximum[i], sensor[i]);
       minimum[i] = min(minimum[i], sensor[i]);
     }
-
-    c++;
-  }
   motorSpeed(0, 0);
   delay(500);
   for (int i = 0; i < 6; i++) trash[i] = ( maximum[i] + minimum[i]) / 2;
@@ -224,19 +218,28 @@ void setup()
   digitalWrite(13, LOW);
 
   for (int i = 0; i < 6; i++) trash[i] = EEPROM.read(i) * 5;
-  counter = EEPROM.read(10);
+
   spl = EEPROM.read(6);
   spr = EEPROM.read(7);
   hpos = EEPROM.read(8);
   gpos = EEPROM.read(9);
-  handle.attach(8);
-  grab.attach(9);
-  grab.write(140);
-  handle.write(0);
-  delay(1500);
-  grab.write(gpos);
-  delay(500);
-  handle.write(hpos);
+  counter = EEPROM.read(10);
+  btd = EEPROM.read(11);
+  mtd = EEPROM.read(12);
+  d = EEPROM.read(13);
+  base = EEPROM.read(14) * d;
+  peak = EEPROM.read(15) * d;
+  cl = base;
+  brake = cl / d;
+
+  //  handle.attach(8);                         //this is for when grabber was attached to bot
+  //  grab.attach(9);
+  //  grab.write(140);
+  //  handle.write(0);
+  //  delay(1500);
+  //  grab.write(gpos);
+  //  delay(500);
+  //  handle.write(hpos);
 
 
   Serial.begin(9600);
@@ -299,7 +302,6 @@ void loop()
     }
     if (r == 1) {
       delay(1000);
-      //      text_line_follow();
       line_follow();
       motorSpeedS();
     }
@@ -316,33 +318,29 @@ void loop()
     else if (r == 5) {
       while (digitalRead(calin) == LOW) sonar_reading_display();
     }
-    if (r <= 5) {
-      display.clearDisplay();
-      display.display();
-      //delay(500);
-    }
     sust_cracker_nut();
+    delay(500);
   }
 
   r = menu_function2();
   if (r != 0) {
     if (r == 1) counter_adjust();
-    else if (r == 2) speed_adjust();
-    else if (r == 3) servo_adjust();
-    else if (r == 4) {
+    else if (r == 2) {
       while (digitalRead(calin) == LOW && digitalRead(switchin) == LOW) text_battery_check();
       display.clearDisplay();
       text("DONE!!!", 23, 24);
       display.display();
     }
-    else if (r == 5) remote_control();
-    if (r <= 5) {
+    else if (r == 3) speed_adjust();
+    else if (r == 4) braking_adjust();
+    else if (r == 5) {
       display.clearDisplay();
+      text("ACTIVATED!", 8, 24);
       display.display();
-      //delay(500);
+      remote_control();
     }
     int p = map(analogRead(8), 740, 1023, 0, 100);
-    if (p <= 40 && r != 5) {
+    if (p <= 40) {
       while (digitalRead(calin) == LOW && digitalRead(switchin) == LOW) text_battery_low();
       display.clearDisplay();
       display.display();

@@ -36,14 +36,14 @@ void remote_control() {
       else if (data == 'i') handle.write(10);
       else if (data == 'j') handle.write(0);
     }
-    int p = map(analogRead(8), 740, 1023, 0, 100);
-    if (p <= 40) {
-      text_battery_low();
-      delay(2000);
-      display.clearDisplay();
-      display.display();
-      break;
-    }
+//    int p = map(analogRead(8), 740, 1023, 0, 100);
+//    if (p <= 20) {
+//      motorSpeedS();
+//      while (digitalRead(switchin) == LOW) text_battery_low();
+//      while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
+//      digitalWrite(calout, LOW);
+//      break;
+//    }
   }
 }
 

@@ -140,11 +140,11 @@ void line_follow() {
       //.............................................................line shuru
       else if (bin == 12) {
         if (k > 0) {
-          motorSpeedR(10 * spr, 10 * spl);
+          motorSpeedL(10 * spr, 10 * spl);
           delay(dt);
         }
         else if (k < 0) {
-          motorSpeedL(10 * spr, 10 * spl);
+          motorSpeedR(10 * spr, 10 * spl);
           delay(dt);
         }
         k = 0;
@@ -302,15 +302,18 @@ void line_follow() {
             k90 = 0;
             cross = 0;
             motorSpeedS();
-            text_battery_check();
-            for (int i = 0; digitalRead(calin) == LOW; i++) {
-              delay(1);
-              if (i == 2000) break;
+            while (sum == 6) {
+              check();
+              text_battery_check();
+              if (digitalRead(calin) == HIGH) break;
             }
             text_line_follow();
+            delay(1000);
             break;
           }
           else {
+            if (counter == 8) cross = 2;
+            else if (counter == 9) cross = 1;
             break;
           }
         }
@@ -334,4 +337,3 @@ void line_follow() {
 
   }//end of while loop!!!!!
 }//line following function
-

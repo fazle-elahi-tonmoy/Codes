@@ -16,7 +16,7 @@ void counter_adjust() {
   }
   while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
   digitalWrite(calout, LOW);
-  
+
   EEPROM.write(10, p);
   delay(10);
   counter = EEPROM.read(10);
@@ -101,7 +101,7 @@ void servo_adjust() {
     display.display();
     if (digitalRead(calin) == HIGH) {
       display.clearDisplay();
-      text("OKAY!!!", 23, 24);
+      text("BYE!!!", 23, 24);
       display.display();
       return;
     }
@@ -123,7 +123,7 @@ void servo_adjust() {
     display.display();
     if (digitalRead(calin) == HIGH) {
       display.clearDisplay();
-      text("BYE!!!", 29, 24);
+      text("OKAY!!!", 29, 24);
       display.display();
       return;
     }
@@ -138,9 +138,3 @@ void servo_adjust() {
   text("DONE!!!", 23, 24);
   display.display();
 }
-
-
-
-
-
-
