@@ -22,6 +22,7 @@ RTCAlarmTime a2;
 #define warning_led_1 4 //this will turn on if the starting time of second alarm is passed
 #define warning_led_2 3 //this will turn on if the starting time of second alarm is passed
 #define warning_led_3 5 //this will turn on if the starting time of second alarm is passed
+#define alarm_2_display_led 7 //this will indicate if you are on 2nd alarm screen
 #define buzzer 2 //don't set this as same as led pin
 #define long_press_timer 1 //minimum second pressing required to register a long press
 
@@ -129,6 +130,7 @@ void loop() {
     if (menu_count == 4) menu_count = 5;
     else if (menu_count == 5) menu_count = 1;
     else menu_count = 4;
+    (menu < 4)? digitalWrite(alarm_2_display_led, LOW) : digitalWrite(alarm_2_display_led, HIGH);
     m3 = millis();
   }
 
@@ -157,6 +159,8 @@ void loop() {
   if (alarm) alarm_function();
 
   //menu display
-  if (millis() - m3 > menu_time * 1000 && menu_count != 1) menu_count = 1;
+  if (millis() - m3 > menu_time * 1000 && menu_count != 1){
+    menu_count = 1; digitalWrite(alarm_2_display_led, LOW);
+  }
   menu(menu_count); //refreshing the display
 }

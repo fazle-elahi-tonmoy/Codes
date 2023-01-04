@@ -14,7 +14,6 @@ void display_value(int a) {
   if (a / 100 > 12) a -= 1200;
   else if (a / 100 == 0) a += 1200;
   if (ss % 2 && menu_count == 1) matrix[7] |= second_symbol_1;
-  if(menu_count == 4) matrix[7] |= B00000001;
 
   switch (a / 1000) {
     case 0: for (byte i = 1; i < 6; i++) matrix[i] |= zero[i - 1]; break;
@@ -73,7 +72,6 @@ void display_value(int a) {
   }
 
   if (ss % 2 && menu_count == 1) matrix[7] |= second_symbol_2;
-  if(menu_count == 5) matrix[7] |= B10000000;
   if (clock.isArmed1()) matrix[7] |= alarm_symbol;
   if (clock.isArmed2()) matrix[7] |= special_alarm_symbol;
   for (byte i = 0; i < 8; i++) lc.setRow(0, i, matrix[i]);
