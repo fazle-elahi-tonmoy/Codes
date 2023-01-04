@@ -77,7 +77,7 @@ uint32_t snooze_time = 5; //if nothing is pressed when alarm went off, it will r
 int snooze_count = maximum_snooze_count;
 bool snooze = 0; //don't change this
 byte menu_count = 1;
-byte menu_limit = 2; //if you want to see date also, put value 3
+byte menu_limit = 2;
 
 //this is for clock calculation
 int current_time;
@@ -93,10 +93,22 @@ byte pm_symbol = B11110000;
 byte second_symbol_1 = B00000011;
 byte second_symbol_2 = B11000000;
 byte alarm_symbol = B00001111;
+
+//this is for display mapping
 int matrix[8];
 byte celcius[8] = {0x00, 0x60, 0x6e, 0x08, 0x08, 0x08, 0x0e, 0x00};
 byte farenhite[8] = {0x00, 0x60, 0x6e, 0x08, 0x0e, 0x08, 0x08, 0x00};
 byte percentage[8] = {0x00, 0x32, 0x34, 0x08, 0x10, 0x2c, 0x4c, 0x00};
+byte one[5]   = {0x40, 0xc0, 0x40, 0x40, 0xe0};
+byte two[5]   = {0xe0, 0x20, 0xe0, 0x80, 0xe0};
+byte three[5] = {0xe0, 0x20, 0xe0, 0x20, 0xe0};
+byte four[5]  = {0xa0, 0xa0, 0xe0, 0x20, 0x20};
+byte five[5]  = {0xe0, 0x80, 0xe0, 0x20, 0xe0};
+byte six[5]   = {0xe0, 0x80, 0xe0, 0xa0, 0xe0};
+byte seven[5] = {0xe0, 0x20, 0x20, 0x20, 0x20};
+byte eight[5] = {0xe0, 0xa0, 0xe0, 0xa0, 0xe0};
+byte nine[5]  = {0xe0, 0xa0, 0xe0, 0x20, 0xe0};
+byte zero[5]  = {0xe0, 0xa0, 0xa0, 0xa0, 0xe0};
 
 
 LedControl lc = LedControl(data_in, clk, cs, 4);
@@ -160,7 +172,6 @@ void loop() {
     while (!digitalRead(set_button));
     if (menu_count == 1) set_time();
     else if (menu_count == 2) set_alarm();
-    else if (menu_count == 3) set_date();
     else if (menu_count == 4) set_start_time();
     else if (menu_count == 5)set_alarm2();
     while (!digitalRead(menu_button));
@@ -222,11 +233,8 @@ void loop() {
       m2 = millis(); //for keeping the track of mute timer
     }
   }
-  Serial.println(String(clock.isArmed1()));
   if (alarm) alarm_function();
-
   temp_update();
-
   if (millis() - m3 > menu_time * 1000 && menu_count > 1 && menu_count < 6) menu_count = 1;
   if (millis() - dh > dht_timer * 1000 && menu_count >= 6) menu_count = 1;
   menu(menu_count); //refreshing the display

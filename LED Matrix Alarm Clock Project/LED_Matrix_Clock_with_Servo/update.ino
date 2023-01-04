@@ -8,11 +8,6 @@ void alarm_update() {
   display_value(current_alarm);
 }
 
-void date_update() {
-  current_date = get_date();
-  display_value(current_date);
-}
-
 void special_alarm_update_1() {
   s_alarm_1 = get_initial();
   display_value(s_alarm_1);
