@@ -2,16 +2,14 @@ int menu_function1() {
   int list = 6;
   int p = 0;
   int temp = 0;
-  if (digitalRead(calin) == HIGH) {
+  if (digitalRead(calin) == LOW) {
     delay(100);
-    while (digitalRead(calin) == HIGH) {
-      delay(1);
-      digitalWrite(calout, HIGH);
-    }
-    digitalWrite(calout, LOW);
     while (digitalRead(calin) == LOW) {
       delay(1);
-      p = map(analogRead(10), 0, 1020, 1, list);
+    }
+    while (digitalRead(calin) == HIGH) {
+      delay(1);
+      p = map(analogRead(13), 0, 1020, 1, list);
       if (temp != p) {
         temp = p;
         if (temp == 1) text_line_follow();
@@ -44,22 +42,18 @@ int menu_function1() {
           display.display();
         }
       }
-      if (digitalRead(switchin) == HIGH) {
-        while (digitalRead(switchin) == HIGH) {
+      if (digitalRead(switchin) == LOW) {
+        while (digitalRead(switchin) == LOW) {
           delay(1);
-          digitalWrite(calout, HIGH);
         }
-        digitalWrite(calout, LOW);
         sust_cracker_nut();
         return 0;
       }
     }
 
-    while (digitalRead(calin) == HIGH) {
+    while (digitalRead(calin) == LOW) {
       delay(1);
-      digitalWrite(calout, HIGH);
     }
-    digitalWrite(calout, LOW);
   }
   return temp;
 }
@@ -69,15 +63,13 @@ int menu_function2() {
   int list = 4;
   int p = 0;
   int temp = 0;
-  if (digitalRead(switchin) == HIGH) {
-    while (digitalRead(switchin) == HIGH) {
-      delay(1);
-      digitalWrite(calout, HIGH);
-    }
-    digitalWrite(calout, LOW);
+  if (digitalRead(switchin) == LOW) {
     while (digitalRead(switchin) == LOW) {
       delay(1);
-      p = map(analogRead(10), 0, 1020, 1, list);
+    }
+    while (digitalRead(switchin) == HIGH) {
+      delay(1);
+      p = map(analogRead(13), 0, 1020, 1, list);
       if (temp != p) {
         temp = p;
         if (temp == 1) {
@@ -100,22 +92,18 @@ int menu_function2() {
           display.display();
         }
       }
-      if (digitalRead(calin) == HIGH) {
-        while (digitalRead(calin) == HIGH) {
+      if (digitalRead(calin) == LOW) {
+        while (digitalRead(calin) == LOW) {
           delay(1);
-          digitalWrite(calout, HIGH);
         }
-        digitalWrite(calout, LOW);
         sust_cracker_nut();
         return 0;
       }
     }
 
-    while (digitalRead(switchin) == HIGH) {
+    while (digitalRead(switchin) == LOW) {
       delay(1);
-      digitalWrite(calout, HIGH);
     }
-    digitalWrite(calout, LOW);
   }
   return temp;
 }

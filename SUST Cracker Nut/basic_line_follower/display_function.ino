@@ -110,7 +110,7 @@ void text_callibrating() {
   text("CALLIBRATING", 20, 24);
   display.display();
   for (i = 95; i <= 105; i += 5) {
-    while (digitalRead(calin) == LOW) {
+    while (digitalRead(calin) == HIGH) {
       t++;
       delay(1);
       if (t == 500) {
@@ -118,7 +118,7 @@ void text_callibrating() {
         break;
       }
     }
-    if (digitalRead(calin) == HIGH) break;
+    if (digitalRead(calin) == LOW) break;
     text(".", i, 24);
     display.display();
   }
@@ -161,7 +161,7 @@ void text_callibrating() {
   display.drawLine(0, 20, 128, 20, WHITE);
   display.drawLine(0, 43, 128, 43, WHITE);
   display.display();
-  while (digitalRead(calin) == HIGH);
   while (digitalRead(calin) == LOW);
+  while (digitalRead(calin) == HIGH);
 
 }

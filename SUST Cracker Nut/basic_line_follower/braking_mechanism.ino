@@ -4,9 +4,9 @@ a:
   int p = 0;
   int q = 0;
   int temp = 0;
-  while (digitalRead(switchin) == LOW) {
+  while (digitalRead(switchin) == HIGH) {
     delay(1);
-    p = map(analogRead(10), 0, 1020, 1, list);
+    p = map(analogRead(13), 0, 1020, 1, list);
     if (temp != p) {
       temp = p;
       if (temp == 1) {
@@ -109,7 +109,7 @@ a:
         display.display();
       }
     }
-    if (digitalRead(calin) == HIGH) {
+    if (digitalRead(calin) == LOW) {
       display.clearDisplay();
       text("BYE!!!", 23, 24);
       display.display();
@@ -118,36 +118,33 @@ a:
     }
   }
 
-  while (digitalRead(switchin) == HIGH) {
+  while (digitalRead(switchin) == LOW) {
     delay(1);
-    digitalWrite(calout, HIGH);
   }
-  digitalWrite(calout, LOW);
 
   while (1) {
-    if (temp == 1) p = map(analogRead(10), 0, 1020, 0, 100);
-    else if (temp == 2) p = map(analogRead(10), 0, 1020, 100, 250);
-    else if (temp == 3) p = map(analogRead(10), 0, 1020, 1, 9);
-    else if (temp == 4) p = map(analogRead(10), 0, 1020, 0, 250);
-    else if (temp == 5) p = map(analogRead(10), 0, 1020, 0, 250);
-    else if (temp >= 6 && temp <= 8) p = map(analogRead(10), 0, 1020, 0, 30);
-    else if (temp == 9) p = map(analogRead(10), 0, 1020, 1, 9);
+    if (temp == 1) p = map(analogRead(13), 0, 1020, 0, 100);
+    else if (temp == 2) p = map(analogRead(13), 0, 1020, 100, 250);
+    else if (temp == 3) p = map(analogRead(13), 0, 1020, 1, 9);
+    else if (temp == 4) p = map(analogRead(13), 0, 1020, 0, 250);
+    else if (temp == 5) p = map(analogRead(13), 0, 1020, 0, 250);
+    else if (temp >= 6 && temp <= 8) p = map(analogRead(13), 0, 1020, 0, 30);
+    else if (temp == 9) p = map(analogRead(13), 0, 1020, 1, 9);
     display.clearDisplay();
     String value = String(p, 10);
     text("ADJUST:", 5, 24);
     text(value, 90, 24);
     display.display();
-    if (digitalRead(calin) == HIGH) {
+    if (digitalRead(calin) == LOW) {
       display.clearDisplay();
       text("BYE!!!", 29, 24);
       display.display();
       delay(300);
       goto a;
     }
-    if (digitalRead(switchin) == HIGH) {
+    if (digitalRead(switchin) == LOW) {
       delay(100);
-      while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
-      digitalWrite(calout, LOW);
+      while (digitalRead(switchin) == LOW);
       display.clearDisplay();
       text("OKAY!!!", 29, 24);
       display.display();

@@ -1,6 +1,6 @@
 void remote_control() {
   int lowlimit = 40;
-  while (digitalRead(calin) == LOW && digitalRead(switchin) == LOW) {
+  while (digitalRead(calin) == HIGH && digitalRead(switchin) == HIGH) {
     if (Serial.available() > 0) {
       char data =  Serial.read();
       if (data == 'F')      mos(10 * spr, 10 * spl);
@@ -11,10 +11,8 @@ void remote_control() {
       else if (data == 'I') mos(0, 10 * spl);
       else if (data == 'H') motorSpeedB(10 * spr, 0);
       else if (data == 'J') motorSpeedB(0, 10 * spl);
-      else if (data == 'W') digitalWrite(calout, HIGH);
-      else if (data == 'w') digitalWrite(calout, LOW);
-      else if (data == 'U') digitalWrite(d30, HIGH);
-      else if (data == 'u') digitalWrite(d30, LOW);
+      else if (data == 'U') digitalWrite(blue, HIGH);
+      else if (data == 'u') digitalWrite(blue, LOW);
       else if (data == 'S') motorSpeedS();
       else if (data == '0') grab.write(140);
       else if (data == '1') grab.write(132);

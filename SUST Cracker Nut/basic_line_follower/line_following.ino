@@ -1,57 +1,57 @@
 void line_follow() {
-  while (digitalRead(calin) == LOW) {
+  while (digitalRead(calin) == HIGH) {
     check();
 
     if (sum == 0) {
       if (mov == 1 ) {
         delay(btd);
         if (k30 == 1) {
-          digitalWrite(d30, HIGH);
+          digitalWrite(blue, HIGH);
           braking_mechanism();
           while (sensor[1] == 0 && sensor[4] == 0) {
             check();
-            motorSpeedR(180, 180);
+            motorSpeedR(240, 240);
           }
-          motorSpeedL(180, 180);
-          delay(br*1.5);
-          digitalWrite(d30, LOW);
+          motorSpeedL(240, 240);
+          delay(br);
+          digitalWrite(blue, LOW);
         }
         else if (k90 == 1) {
-          digitalWrite(d90, HIGH);
+          digitalWrite(green, HIGH);
           braking_mechanism();
           while (sensor[1] == 0 && sensor[4] == 0) {
             check();
-            motorSpeedR(180, 180);
+            motorSpeedR(240, 240);
 
           }
-          motorSpeedL(180, 180);
+          motorSpeedL(240, 240);
           delay(br);
-          digitalWrite(d90, LOW);
+          digitalWrite(green, LOW);
         }
       }
       else if (mov == 2) {
         delay(btd);
         if (k30 == 2) {
-          digitalWrite(d30, HIGH);
+          digitalWrite(blue, HIGH);
           braking_mechanism();
           while (sensor[1] == 0 && sensor[4] == 0) {
             check();
-            motorSpeedL(180, 180);
+            motorSpeedL(240, 240);
           }
-          motorSpeedR(180, 180);
-          delay(br*1.5);
-          digitalWrite(d30, LOW);
+          motorSpeedR(240, 240);
+          delay(br);
+          digitalWrite(blue, LOW);
         }
         else if (k90 == 2) {
-          digitalWrite(d90, HIGH);
+          digitalWrite(green, HIGH);
           braking_mechanism();
           while (sensor[1] == 0 && sensor[4] == 0) {
             check();
-            motorSpeedL(180, 180);
+            motorSpeedL(240, 240);
           }
-          motorSpeedR(180, 180);
+          motorSpeedR(240, 240);
           delay(br);
-          digitalWrite(d90, LOW);
+          digitalWrite(green, LOW);
         }
       }
       else if (wall_trigger(1) == 1) wall_follow();
@@ -60,34 +60,35 @@ void line_follow() {
     //..............................................................sum=1||sum=2
     else if (sum == 1 || sum == 2) {
       check();
+      //      obstacle(1);
       if (cross == 1) {
-        digitalWrite(d90, HIGH);
-        digitalWrite(d30, HIGH);
+        digitalWrite(blue, HIGH);
+        digitalWrite(green, HIGH);
         braking_mechanism();
-        motorSpeedR(180, 180);
+        motorSpeedR(240, 240);
         check();
         while (sensor[0] == 1) check();
         while (sensor[0] == 0) check();
         while (sensor[2] == 1 || sensor[3] == 1) check();
         while (sensor[2] == 0 && sensor[3] == 0) check();
-        motorSpeedL(180, 180);
+        motorSpeedL(240, 240);
         delay(br);
-        digitalWrite(d90, LOW);
-        digitalWrite(d30, LOW);
+        digitalWrite(green, LOW);
+        digitalWrite(blue, LOW);
       }
       if (cross == 2) {
-        digitalWrite(d90, HIGH);
-        digitalWrite(d30, HIGH);
+        digitalWrite(green, HIGH);
+        digitalWrite(blue, HIGH);
         braking_mechanism();
-        motorSpeedL(180, 180);
+        motorSpeedL(240, 240);
         while (sensor[5] == 1) check();
         while (sensor[5] == 0) check();
         while (sensor[2] == 1 || sensor[3] == 1) check();
         while (sensor[2] == 0 && sensor[3] == 0) check();
-        motorSpeedR(180, 180);
+        motorSpeedR(240, 240);
         delay(br);
-        digitalWrite(d90, LOW);
-        digitalWrite(d30, LOW);
+        digitalWrite(green, LOW);
+        digitalWrite(blue, LOW);
       }
       //.............................................................line shuru
       else if (bin == 12) {
@@ -135,7 +136,7 @@ void line_follow() {
           delay(dt);
           k = 4;
         }
-        mos( -3 * spr, 10 * spl);
+        mos( -4 * spr, 10 * spl);
         //mov = 1;
       }
       else if (bin == 1) {
@@ -144,7 +145,7 @@ void line_follow() {
           delay(dt);
           k = 5;
         }
-        mos(-5 * spr, 10 * spl);
+        mos(-7 * spr, 10 * spl);
         mov = 1;
       }
       // ..................................................dan side shesh
@@ -171,7 +172,7 @@ void line_follow() {
           delay(dt);
           k = -4;
         }
-        mos(10 * spr, -3 * spl);
+        mos(10 * spr, -4 * spl);
         //mov = 2;
       }
       else if (bin == 32) {
@@ -180,7 +181,7 @@ void line_follow() {
           delay(dt);
           k = -5;
         }
-        mos(10 * spr, -5 * spl);
+        mos(10 * spr, -7 * spl);
         mov = 2;
       }
     }//...........................................................................end sum 1
@@ -188,6 +189,7 @@ void line_follow() {
     //...............................................................................sum=3||sum=4||sum=5
     else if (sum == 3 || sum == 4 || sum == 5) {
       tcount = 0;
+      mos(50, 50);
       if (bin == 11 || bin == 13 || bin == 9 || bin == 25 || bin == 19) {
         k30 = 1;
         mov = 1;
@@ -201,27 +203,28 @@ void line_follow() {
       else if (bin == 7 || bin == 15 || bin == 31) { //31 mane 011111
         k90 = 1;
         mov = 1;
-        //        m81 = m82 = millis();
-        //        while (sum != 6 && sum != 0) {
-        //          check();
-        //          m82 = millis();
-        //          if (m82 - m81 >= 120) {
-        //            break;
-        //          }
-        //        }
-      }
-      else if (bin == 56 || bin == 60 || bin == 62) {   //62 mane 111110
-        k90 = 2;
-        mov = 2;
         m81 = m82 = millis();
         while (sum != 6 && sum != 0) {
           check();
           m82 = millis();
-          if (m82 - m81 >= 50) {
-            cross = 2;
+          if (m82 - m81 >= 80) {
+            cross = 1;
             break;
           }
         }
+      }
+      else if (bin == 56 || bin == 60 || bin == 62) {   //62 mane 111110
+        k90 = 2;
+        mov = 2;
+//        m81 = m82 = millis();
+        //        while (sum != 6 && sum != 0) {
+        //          check();
+        //          m82 = millis();
+        //          if (m82 - m81 >= 50) {
+        //            cross = 2;
+        //            break;
+        //          }
+        //        }
       }
       //...............................................................................line changing
       mi1 = millis ();
@@ -230,35 +233,34 @@ void line_follow() {
 
     //...........................................................................sum=6
     else if (sum == 6 && mode == 1) {
-      digitalWrite(d30, HIGH);
-      digitalWrite(d90, HIGH);
+      mos(50, 50);
+      digitalWrite(red, HIGH);
       k30 = 0;
-      mov = 2;
-      k90 = 2;
+      mov = 1;
+      k90 = 1;
       m81 = m82 = millis();
       while (sum != 0) {
         check();
         m82 = millis();
-        if (m82 - m81 >= 50) {
-          if (sum == 6 && mode == 1 && counter != 0) {
+        if (m82 - m81 >= 80) {
+          if (sum == 6) {
             braking_mechanism();
             motorSpeedS();
             while (sum == 6) {
               check();
-              if (digitalRead(calin) == HIGH) break;
+              if (digitalRead(calin) == LOW) break;
             }
             text_line_follow();
             break;
           }
           else {
-            cross = 2;
-            mov = 0;
+            cross = 1;
+//           mov = 1;
             break;
           }
         }
       }
-      digitalWrite(d30, LOW);
-      digitalWrite(d90, LOW);
+      digitalWrite(red, LOW);
       mi1 = millis();
     }
 

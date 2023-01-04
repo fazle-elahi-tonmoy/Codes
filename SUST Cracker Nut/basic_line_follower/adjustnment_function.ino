@@ -1,13 +1,13 @@
 void counter_adjust() {
   int p;
-  while (digitalRead(switchin) == LOW) {
-    p = map(analogRead(10), 0, 1020, 0, 9);
+  while (digitalRead(switchin) == HIGH) {
+    p = map(analogRead(13), 0, 1020, 0, 9);
     display.clearDisplay();
     String value = String(p, 10);
     text("COUNTER:", 10, 24);
     text(value, 110, 24);
     display.display();
-    if (digitalRead(calin) == HIGH) {
+    if (digitalRead(calin) == LOW) {
       display.clearDisplay();
       text("BYE!!!", 29, 24);
       display.display();
@@ -15,8 +15,7 @@ void counter_adjust() {
       return;
     }
   }
-  while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
-  digitalWrite(calout, LOW);
+  while (digitalRead(switchin) == LOW);
 
   EEPROM.write(10, p);
   delay(10);
@@ -32,8 +31,8 @@ void counter_adjust() {
 
 void speed_adjust() {
   int p;
-  while (digitalRead(switchin) == LOW) {
-    p = map(analogRead(10), 0, 1020, 0, 25);
+  while (digitalRead(switchin) == HIGH) {
+    p = map(analogRead(13), 0, 1020, 0, 25);
     display.clearDisplay();
     String value = String(p, 10);
     text("LEFT :", 12, 16);
@@ -44,7 +43,7 @@ void speed_adjust() {
         display.drawLine(4, j, i, j, WHITE);
       }
     display.display();
-    if (digitalRead(calin) == HIGH) {
+    if (digitalRead(calin) == LOW) {
       display.clearDisplay();
       text("BYE!!!", 29, 24);
       display.display();
@@ -56,11 +55,10 @@ void speed_adjust() {
   delay(10);
   spl = EEPROM.read(6);
 
-  while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
-  digitalWrite(calout, LOW);
+  while (digitalRead(switchin) == LOW);
 
-  while (digitalRead(switchin) == LOW) {
-    p = map(analogRead(10), 0, 1020, 0, 25);
+  while (digitalRead(switchin) == HIGH) {
+    p = map(analogRead(13), 0, 1020, 0, 25);
     display.clearDisplay();
     String value = String(p, 10);
     text("RIGHT :", 7, 16);
@@ -71,7 +69,7 @@ void speed_adjust() {
         display.drawLine(4, j, i, j, WHITE);
       }
     display.display();
-    if (digitalRead(calin) == HIGH) {
+    if (digitalRead(calin) == LOW) {
       display.clearDisplay();
       text("OKAY!!!", 23, 24);
       display.display();
@@ -80,8 +78,7 @@ void speed_adjust() {
     }
   }
 
-  while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
-  digitalWrite(calout, LOW);
+  while (digitalRead(switchin) == LOW);
 
   display.clearDisplay();
   text("DONE!!!", 23, 24);
@@ -95,15 +92,15 @@ void speed_adjust() {
 
 
 void servo_adjust() {
-  while (digitalRead(switchin) == LOW) {
-    gpos = map(analogRead(10), 0, 1020, 65, 140);
+  while (digitalRead(switchin) == HIGH) {
+    gpos = map(analogRead(13), 0, 1020, 65, 140);
     grab.write(gpos);
     display.clearDisplay();
     text("GRAB:", 17, 24);
     String value = String(gpos, 10);
     text(value, 75, 24);
     display.display();
-    if (digitalRead(calin) == HIGH) {
+    if (digitalRead(calin) == LOW) {
       display.clearDisplay();
       text("BYE!!!", 23, 24);
       display.display();
@@ -115,18 +112,17 @@ void servo_adjust() {
   EEPROM.write(9, gpos);
   delay(10);
 
-  while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
-  digitalWrite(calout, LOW);
+  while (digitalRead(switchin) == LOW) ;
 
-  while (digitalRead(switchin) == LOW) {
-    hpos = map(analogRead(10), 0, 1020, 10, 100);
+  while (digitalRead(switchin) == HIGH) {
+    hpos = map(analogRead(13), 0, 1020, 10, 100);
     handle.write(hpos);
     display.clearDisplay();
     text("HANDLE:", 5, 24);
     String value = String(hpos, 10);
     text(value, 87, 24);
     display.display();
-    if (digitalRead(calin) == HIGH) {
+    if (digitalRead(calin) == LOW) {
       display.clearDisplay();
       text("OKAY!!!", 29, 24);
       display.display();
@@ -137,8 +133,7 @@ void servo_adjust() {
   EEPROM.write(8, hpos);
   delay(10);
 
-  while (digitalRead(switchin) == HIGH) digitalWrite(calout, HIGH);
-  digitalWrite(calout, LOW);
+  while (digitalRead(switchin) == LOW);
 
   display.clearDisplay();
   text("DONE!!!", 23, 24);
