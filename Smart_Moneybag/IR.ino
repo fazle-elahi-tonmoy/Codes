@@ -10,10 +10,11 @@ void led_blinking() {
   if (millis() - timer2 > 500 && reading) {
     reading = 0;
     int x = analogRead(IR_receiver);
-    (x > mid_value) ? x = 0 : x = 1;
-    if (led_state != x && lock) {
+    (x < mid_value) ? x = 0 : x = 1;
+    if (led_state != x && lock && !theif) {
       theif = 1;
       timer4 = millis();
     }
+    Serial.println(String(led_state) + " " + String(x) + " " + String(theif));
   }
 }
