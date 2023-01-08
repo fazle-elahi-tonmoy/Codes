@@ -23,7 +23,6 @@ void setup() {
   pinMode(button, INPUT_PULLUP);
   Serial.begin(9600);
   password = EEPROM.read(0);
-  lock = EEPROM.read(1);
   Serial.println(password);
 }
 

@@ -15,7 +15,6 @@ void press_function() {
         lock = 0;
         theif = 0;
         trigger = 0;
-        EEPROM.write(1, lock);
       }
     }
 
@@ -23,7 +22,6 @@ void press_function() {
       blink(1);
       delay(10000);
       lock = 1;
-      EEPROM.write(1, lock);
       blink(1);
     }
   }
