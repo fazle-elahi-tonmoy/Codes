@@ -9,20 +9,20 @@ void press_function() {
       EEPROM.write(0, password);
     }
 
-    else if (button_read > 100) {  //password verifying  mechanism
+    else if (button_read == 100 and !theif) {  //locking the moneybag
+      blink(1);
+      delay(10000);
+      lock = 1;
+      blink(1);
+    }
+
+    else {  //password verifying  mechanism
       password_reading();
       if (pass_read == password) {
         lock = 0;
         theif = 0;
         trigger = 0;
       }
-    }
-
-    else if (button_read == 100 and !theif) {  //locking the moneybag
-      blink(1);
-      delay(10000);
-      lock = 1;
-      blink(1);
     }
   }
 }
