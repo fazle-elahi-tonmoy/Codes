@@ -1,5 +1,4 @@
 #include <EEPROM.h>
-
 #define IR_receiver A0
 #define buzzer_pin 6
 #define IR_Tx A1
