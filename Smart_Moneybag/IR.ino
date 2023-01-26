@@ -10,7 +10,7 @@ void IR_Testing() {
   if (millis() - timer2 > 50 && reading) {
     reading = 0;
     int x = analogRead(IR_receiver);
-    (x < mid_value) ? x = 0 : x = 1;
+    (x < mid_value) ? x = 1 : x = 0;
     if (led_state != x && lock && !theif && !trigger) {
       trigger = 1;
       timer4 = millis();
