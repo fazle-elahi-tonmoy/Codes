@@ -29,9 +29,10 @@ void press_function() {
 
 void password_reading() {
   if (button_read >= 100) button_read -= 100;
-  pass_read = button_read * 10;
+  pass_read = button_read;
+  // pass_read = button_read * 10;
   waiting_for_pass_input();
-  pass_read += button_read;
+  // pass_read += button_read;
 }
 
 void waiting_for_pass_input() {
