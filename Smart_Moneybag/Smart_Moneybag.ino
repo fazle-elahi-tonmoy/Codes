@@ -4,7 +4,7 @@
 #define IR_Tx A1
 #define LED 13
 #define mid_value 950
-#define trigger_time 3
+#define trigger_time 3 //seconds to trigger time
 #define button 2
 #define debug 0
 
