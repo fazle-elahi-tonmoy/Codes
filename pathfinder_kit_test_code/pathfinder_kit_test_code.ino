@@ -16,8 +16,8 @@ void setup() {
   pin_define();  //direction setting
   for (byte i = 0; i < 6; i++) pinMode(mpin[i], OUTPUT);
   motor(100, 100);
-  // analog_display();
-  TechTopia();
+  analog_display();
+  // TechTopia();
 }
 void loop() {
 }
