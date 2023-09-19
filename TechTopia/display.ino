@@ -69,6 +69,6 @@ const unsigned char techtopia[] PROGMEM = {
 
 void TechTopia() {
   display.clearDisplay();
-  display.drawBitmap(0, 0, techtopia, 128, 64, 1);
+  display.drawBitmap(0, 0, techtopia, 64, 32, 1);
   display.display();
 }
