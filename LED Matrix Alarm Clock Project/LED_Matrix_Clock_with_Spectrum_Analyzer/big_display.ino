@@ -26,7 +26,7 @@ void big_display(int a) {
     case 8: for (byte i = 0; i < 7; i++) matrix[i] |= EIGHT[i] >> 2; break;
     case 9: for (byte i = 0; i < 7; i++) matrix[i] |= NINE[i] >> 2; break;
   }
-  for (byte i = 0; i < 7; i++) lc.setRow(3, i, matrix[i]);
+  for (byte i = 0; i < 7; i++) lc.setRow(3, i+1, matrix[i]);
   for (byte i = 0; i < 8; i++) matrix[i] = 0;
 
   switch ((a % 1000) / 100) {
@@ -44,7 +44,7 @@ void big_display(int a) {
   if (menu_count == 1 && ss % 2) {
     matrix[1] |= 1; matrix[2] |= 1; matrix[5] |= 1; matrix[6] |= 1;
   }
-  for (byte i = 0; i < 7; i++) lc.setRow(2, i, matrix[i]);
+  for (byte i = 0; i < 7; i++) lc.setRow(2, i+1, matrix[i]);
   for (byte i = 0; i < 8; i++) matrix[i] = 0;
 
 
@@ -64,7 +64,7 @@ void big_display(int a) {
     matrix[1] |= 0x80; matrix[2] |= 0x80; matrix[5] |= 0x80; matrix[6] |= 0x80;
   }
   
-  for (byte i = 0; i < 7; i++) lc.setRow(1, i, matrix[i]);
+  for (byte i = 0; i < 7; i++) lc.setRow(1, i+1, matrix[i]);
   for (byte i = 0; i < 8; i++) matrix[i] = 0;
 
   switch (a % 10) {
@@ -83,6 +83,6 @@ void big_display(int a) {
   if (clock.isArmed1() && menu_count != 3)
     for (byte i = 0; i < 3; i++) matrix[i] |= 1;
     
-  for (byte i = 0; i < 7; i++) lc.setRow(0, i, matrix[i]);
+  for (byte i = 0; i < 7; i++) lc.setRow(0, i+1, matrix[i]);
   for (byte i = 0; i < 8; i++) matrix[i] = 0;
 }

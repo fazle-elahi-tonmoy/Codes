@@ -5,12 +5,12 @@
 
 //for audio spectrum visualiser
 #define SAMPLES 64
-#define  xres 32
-#define  yres 8
-byte MY_ARRAY[] = {0, 3, 7, 15, 31, 63, 127, 255};
+#define xres 32
+#define yres 8
+byte MY_ARRAY[] = { 0, 3, 7, 15, 31, 63, 127, 255 };
 double vReal[SAMPLES], vImag[SAMPLES];
 int data_avgs[xres];
-byte yvalue, displaycolumn , displayvalue;
+byte yvalue, displaycolumn, displayvalue;
 short int peaks[32];
 
 DS3231 clock;
@@ -25,18 +25,18 @@ RTCAlarmTime a2;
 #define module_count 4
 
 //this is for push buttons and buzzer
-#define menu_button 16 //this will shuffle the menu or bring back to menu
+#define menu_button 16  //this will shuffle the menu or bring back to menu
 #define back_button 5
-#define set_button 9 //this will engage or change a value
-#define led 13 //to ensure if the button is pressed
+#define set_button 9  //this will engage or change a value
+#define led 13        //to ensure if the button is pressed
 #define lamp 3
-#define long_press_timer 500 //minimum time required to register a long press
-#define buzzer 2 //don't set this as same as led pin
+#define long_press_timer 500  //minimum time required to register a long press
+#define buzzer 2              //don't set this as same as led pin
 
 //define how your alarm will behave
-#define beeping_interval 100 //set this higher for slower alarm tone
-#define menu_time 10 //turn off the alarm automatically if you don't press anything in 60 seconds
-uint32_t mute_timer = 60;  //set the value to 0 if you want to keep going permanently,
+#define beeping_interval 100  //set this higher for slower alarm tone
+#define menu_time 10          //turn off the alarm automatically if you don't press anything in 60 seconds
+uint32_t mute_timer = 60;     //set the value to 0 if you want to keep going permanently,
 byte snooze_time = 5, maximum_snooze_count = 10;
 
 //for co-ordination purpose, dont change this
@@ -55,16 +55,16 @@ int hh, mm, ss, DD, MM, YY;
 uint32_t m1, m2, m3, sz, al = millis();
 
 int matrix[8];
-byte one[5]   = {0x40, 0xc0, 0x40, 0x40, 0xe0};
-byte two[5]   = {0xe0, 0x20, 0xe0, 0x80, 0xe0};
-byte three[5] = {0xe0, 0x20, 0xe0, 0x20, 0xe0};
-byte four[5]  = {0xa0, 0xa0, 0xe0, 0x20, 0x20};
-byte five[5]  = {0xe0, 0x80, 0xe0, 0x20, 0xe0};
-byte six[5]   = {0xe0, 0x80, 0xe0, 0xa0, 0xe0};
-byte seven[5] = {0xe0, 0x20, 0x20, 0x20, 0x20};
-byte eight[5] = {0xe0, 0xa0, 0xe0, 0xa0, 0xe0};
-byte nine[5]  = {0xe0, 0xa0, 0xe0, 0x20, 0xe0};
-byte zero[5]  = {0xe0, 0xa0, 0xa0, 0xa0, 0xe0};
+byte one[5] = { 0x40, 0xc0, 0x40, 0x40, 0xe0 };
+byte two[5] = { 0xe0, 0x20, 0xe0, 0x80, 0xe0 };
+byte three[5] = { 0xe0, 0x20, 0xe0, 0x20, 0xe0 };
+byte four[5] = { 0xa0, 0xa0, 0xe0, 0x20, 0x20 };
+byte five[5] = { 0xe0, 0x80, 0xe0, 0x20, 0xe0 };
+byte six[5] = { 0xe0, 0x80, 0xe0, 0xa0, 0xe0 };
+byte seven[5] = { 0xe0, 0x20, 0x20, 0x20, 0x20 };
+byte eight[5] = { 0xe0, 0xa0, 0xe0, 0xa0, 0xe0 };
+byte nine[5] = { 0xe0, 0xa0, 0xe0, 0x20, 0xe0 };
+byte zero[5] = { 0xe0, 0xa0, 0xa0, 0xa0, 0xe0 };
 
 
 LedControl lc = LedControl(data_in, clk, cs, 4);
@@ -83,7 +83,7 @@ void setup() {
   digitalWrite(15, LOW);
   for (byte i = 0; i < 4; i++) {
     (i < module_count) ? lc.shutdown(i, false) : lc.shutdown(i, true);
-    lc.setIntensity(i, 1); //maximum brightness is 15
+    lc.setIntensity(i, 15);  //maximum brightness is 15
     lc.clearDisplay(i);
   }
   Serial.begin(9600);
@@ -97,63 +97,85 @@ void loop() {
   if (r == 2) {
     if (!alarm) digitalWrite(lamp, !digitalRead(lamp));
     else {
-      alarm = 0; digitalWrite(buzzer, 0); snooze = 0;
+      alarm = 0;
+      digitalWrite(buzzer, 0);
+      snooze = 0;
       if (snooze_count > 0) {
-        snooze_count --;
-        snooze = 1; //alarm will snooze if menu button is pressed
+        snooze_count--;
+        snooze = 1;  //alarm will snooze if menu button is pressed
         sz = millis();
       }
     }
+  } else if (r == 1) {
+    while (!digitalRead(menu_button))
+      ;
+    spectrum();
   }
-  else if (r == 1) spectrum();
 
   r = back_press(0);
   if (r == 2) {
     if (alarm) {
-      alarm = 0; digitalWrite(buzzer, 0); snooze = 0;
-    }
-    else {
+      alarm = 0;
+      digitalWrite(buzzer, 0);
+      snooze = 0;
+    } else {
       menu_count++;
       if (menu_count > menu_limit) menu_count = 1;
     }
     m3 = millis();
-  }
-  else if (r == 1) {
-    lc.shutdown(3, 1); lc.shutdown(2, 1); ss = 0; alarm = 0; digitalWrite(buzzer, 0); snooze = 0;
-    while (!digitalRead(back_button));
+  } else if (r == 1) {
+    lc.shutdown(3, 1);
+    lc.shutdown(2, 1);
+    ss = 0;
+    alarm = 0;
+    digitalWrite(buzzer, 0);
+    snooze = 0;
+    while (!digitalRead(back_button))
+      ;
     if (menu_count == 1) set_time();
     else if (menu_count == 2) set_alarm();
-    while (!digitalRead(menu_button));
+    while (!digitalRead(menu_button))
+      ;
   }
 
   r = set_press(0);
   if (r == 1) {
-    lc.shutdown(3, 1); lc.shutdown(2, 1); ss = 0; alarm = 0; digitalWrite(buzzer, 0); snooze = 0;
-    while (!digitalRead(set_button));
+    lc.shutdown(3, 1);
+    lc.shutdown(2, 1);
+    ss = 0;
+    alarm = 0;
+    digitalWrite(buzzer, 0);
+    snooze = 0;
+    while (!digitalRead(set_button))
+      ;
     if (menu_count == 1) set_time();
     else if (menu_count == 2) set_alarm();
-    while (!digitalRead(menu_button));
+    while (!digitalRead(menu_button))
+      ;
   }
   if (r == 2) {
-    alarm = 0; digitalWrite(buzzer, 0); snooze = 0;
+    alarm = 0;
+    digitalWrite(buzzer, 0);
+    snooze = 0;
     if (menu_count == 2) clock.armAlarm1(!clock.isArmed1());
     if (menu_count == 3) clock.armAlarm2(!clock.isArmed2());
     m3 = millis();
   }
 
   if (snooze && millis() - sz > snooze_time * 60000) {
-    alarm = 1; //triggering the alarm
+    alarm = 1;  //triggering the alarm
     snooze = 0;
-    m2 = millis(); //for keeping the track of mute timer
+    m2 = millis();  //for keeping the track of mute timer
   }
 
   if (clock.isArmed1()) {
     current_time = get_time();
-    int diff =  t_diff(current_time, current_alarm);
+    int diff = t_diff(current_time, current_alarm);
     if (diff == 0 && ss == 0) {
-      alarm = 1; //triggering the alarm
-      snooze_count = maximum_snooze_count; snooze = 0;
-      m2 = millis(); //for keeping the track of mute timer
+      alarm = 1;  //triggering the alarm
+      snooze_count = maximum_snooze_count;
+      snooze = 0;
+      m2 = millis();  //for keeping the track of mute timer
     }
   }
 
