@@ -3,18 +3,20 @@ BluetoothSerial SerialBT;
 
 #define lx 33
 #define ly 32
-#define lb 25
+#define lb 16
 #define rx 35
 #define ry 34
-#define rb 26
+#define rb 23
 #define pl 39
 #define pr 36
 #define l1 4
 #define l2 15
-#define r1 22
-#define r2 23
+#define r1 18
+#define r2 19
+#define e1 16
+#define e2 23
 #define calb 0
-#define led 5
+#define led 12
 
 const int button[7] = { lb, rb, l1, l2, r1, r2, calb };
 const int pot[6] = { lx, ly, rx, ry, pl, pr };
@@ -25,13 +27,6 @@ int temp[12] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
 
 
 void setup() {
-  pinMode(18, OUTPUT);
-  pinMode(5, OUTPUT);
-  digitalWrite(18, 0);
-  for (byte i = 0; i < 6; i++) {
-    digitalWrite(5, !digitalRead(5));
-    delay(100);
-  }
   for (byte i = 0; i < 7; i++) pinMode(button[i], INPUT_PULLUP);
   Serial.begin(4800);
 }
