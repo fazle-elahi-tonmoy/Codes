@@ -76,6 +76,7 @@ void setup() {
   RMaker.enableOTA(OTA_USING_PARAMS);
   RMaker.setTimeZone("Asia/Dhaka");
   RMaker.enableSchedule();
+  RMaker.enableScenes();
   RMaker.start();
 
   RMaker.enableOTA(OTA_USING_PARAMS);
