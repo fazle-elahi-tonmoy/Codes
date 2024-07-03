@@ -1,69 +1,85 @@
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include "BluetoothSerial.h"
+#include <ESP32Encoder.h>
+#include <EEPROM.h>
+#include "bitmap.h"
+#include <BleKeyboard.h>
+BleKeyboard bleKeyboard("BLE Joystick");
+ESP32Encoder Lencoder;
+ESP32Encoder Rencoder;
 BluetoothSerial SerialBT;
+Adafruit_SSD1306 display(128, 32, &Wire, -1);
+
+long refresh_timer;
 
 #define lx 33
 #define ly 32
-#define lb 16
+#define lb 25
 #define rx 35
 #define ry 34
-#define rb 23
-#define pl 39
-#define pr 36
+#define rb 26
 #define l1 4
 #define l2 15
 #define r1 18
 #define r2 19
-#define e1 16
-#define e2 23
+#define el 16
+#define er 23
 #define calb 0
-#define led 12
-
-const int button[7] = { lb, rb, l1, l2, r1, r2, calb };
-const int pot[6] = { lx, ly, rx, ry, pl, pr };
-int pot_val[6], pot_min[2] = { 0, 0 }, pot_max[2] = { 4095, 4095 };
-int pot_mid[4] = { 2000, 1980, 1950, 1960 };
-int button_val[6];
-int temp[12] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+#define FRAME_COUNT sizeof(frames) / sizeof(frames[0])
+int frame = 0;
+const int button[8] = { lb, rb, l1, l2, r1, r2, el, er };
+const int joystick_pin[4] = { lx, ly, rx, ry };
+int joystick[4], joy_max[4], joy_min[4], joy_mid[4];
+int button_val[8];
+int temp[10] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+long Lposition, Rposition, lastPosL, lastPosR;
 
 
 void setup() {
-  for (byte i = 0; i < 7; i++) pinMode(button[i], INPUT_PULLUP);
-  Serial.begin(4800);
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.setRotation(2);
+  display.setTextColor(1);
+  display.setTextSize(2);
+  EEPROM.begin(32);
+  for (byte i = 0; i < 4; i++) {
+    joy_mid[i] = EEPROM.read(i) * 16;
+    joy_min[i] = EEPROM.read(i + 2) * 16;
+    joy_max[i] = EEPROM.read(i + 4) * 16;
+  }
+  for (byte i = 0; i < 8; i++) pinMode(button[i], INPUT_PULLUP);
+  pinMode(17, INPUT_PULLUP);
+  pinMode(5, INPUT_PULLUP);
+  pinMode(13, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+  Lencoder.attachHalfQuad(17, 5);
+  Rencoder.attachHalfQuad(13, 14);
 }
 
 void loop() {
-  byte x = press(calb);
-  if (x) {
-    Serial.println(x);
-    if (x == 1) send_data();
-
-    else if (x == 2) {
-      while (!press(calb)) {
-        for (byte i = 0; i < 7; i++) Serial.printf("%d ", digitalRead(button[i]));
-        for (byte i = 0; i < 6; i++) Serial.printf("%d ", analogRead(pot[i]));
-        Serial.println();
+  home_screen();
+  if (push(calb)) {
+    byte r = menu();
+    if (r) {
+      if(r == 1) send_data();
+      if(r == 2) ble_joystick();
+      if (r == 3) {
+        display.clearDisplay();
+        text("CALIBRATE", 11, 8);
+        display.display();
+        cal();
+        display.clearDisplay();
+        display.setTextSize(1);
+        for (byte i = 0; i < 4; i++)
+          text(String(joy_min[i]) + "    " + String(joy_mid[i]) + "    " + String(joy_max[i]), 4, i * 8);
+        display.display();
+        while (!push(calb))
+          ;
+        display.setTextSize(2);
       }
-    }
-
-    else if (x == 3) {
-      while (!press(calb)) {
-        joystick();
-        for (byte i = 0; i < 6; i++) Serial.printf("%d ", button_val[i]);
-        for (byte i = 0; i < 6; i++) Serial.printf("%d ", pot_val[i]);
-        Serial.println();
-      }
-    }
-
-    else if (x == 4) {
-      while (!press(calb)) {
-        int p = recheck();
-        if (p){
-          digitalWrite(led, 1);
-          delay(100);
-          digitalWrite(led, 0);
-          // Serial.println(p,BIN);
-        } 
-      }
+      if (r == 4) pot_display();
+      if (r == 5) button_display();
+      if (r == 6) console_display();
     }
   }
 }

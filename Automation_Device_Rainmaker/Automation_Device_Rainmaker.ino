@@ -6,7 +6,7 @@
 #include "SSD1306AsciiWire.h"
 SSD1306AsciiWire oled;
 
-const char *service_name = "Automation Device";
+const char *service_name = "Home Automation";
 const char *pop = "automation";
 
 static int lbutton = 18;
@@ -78,9 +78,6 @@ void setup() {
   RMaker.enableSchedule();
   RMaker.enableScenes();
   RMaker.start();
-
-  RMaker.enableOTA(OTA_USING_PARAMS);
-  RMaker.setTimeZone("Asia/Dhaka");
   WiFi.onEvent(sysProvEvent);
   // WiFiProv.beginProvision(WIFI_PROV_SCHEME_SOFTAP, WIFI_PROV_SCHEME_HANDLER_NONE, WIFI_PROV_SECURITY_1, pop, service_name);
   WiFiProv.beginProvision(WIFI_PROV_SCHEME_BLE, WIFI_PROV_SCHEME_HANDLER_FREE_BTDM, WIFI_PROV_SECURITY_1, pop, service_name);

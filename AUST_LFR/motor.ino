@@ -1,0 +1,29 @@
+void motor(int a, int b) {
+  if (a > 0) {
+    digitalWrite(lmf, 1);
+    digitalWrite(lmb, 0);
+  } 
+  
+  else {
+    a = -(a);
+    digitalWrite(lmf, 0);
+    digitalWrite(lmb, 1);
+  }
+
+  if (b > 0) {
+    digitalWrite(rmf, 1);
+    digitalWrite(rmb, 0);
+  } 
+  
+  else {
+    b = -b;
+    digitalWrite(rmf, 0);
+    digitalWrite(rmb, 1);
+  }
+
+  if (a > 250) a = 250;
+  if (b > 250) b = 250;
+
+  analogWrite(lms, a);
+  analogWrite(rms, b);
+}
