@@ -9,23 +9,23 @@ BleKeyboard bleKeyboard("BLE Joystick");
 ESP32Encoder Lencoder;
 ESP32Encoder Rencoder;
 BluetoothSerial SerialBT;
-Adafruit_SSD1306 display(128, 32, &Wire, -1);
+Adafruit_SSD1306 display(128, 64, &Wire, -1);
 
 long refresh_timer;
 
-#define lx 33
-#define ly 32
-#define lb 25
-#define rx 35
-#define ry 34
-#define rb 26
+#define lx 34
+#define ly 35
+#define lb 5
+#define rx 36
+#define ry 36
+#define rb 32
 #define l1 4
-#define l2 15
-#define r1 18
-#define r2 19
-#define el 16
-#define er 23
-#define calb 0
+#define l2 4
+#define r1 4
+#define r2 4
+#define el 15
+#define er 27
+#define calb 18
 #define FRAME_COUNT sizeof(frames) / sizeof(frames[0])
 int frame = 0;
 const int button[8] = { lb, rb, l1, l2, r1, r2, el, er };
@@ -38,7 +38,7 @@ long Lposition, Rposition, lastPosL, lastPosR;
 
 void setup() {
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.setRotation(2);
+  // display.setRotation(2);
   display.setTextColor(1);
   display.setTextSize(2);
   EEPROM.begin(32);
@@ -48,12 +48,13 @@ void setup() {
     joy_max[i] = EEPROM.read(i + 4) * 16;
   }
   for (byte i = 0; i < 8; i++) pinMode(button[i], INPUT_PULLUP);
-  pinMode(17, INPUT_PULLUP);
-  pinMode(5, INPUT_PULLUP);
-  pinMode(13, INPUT_PULLUP);
-  pinMode(14, INPUT_PULLUP);
-  Lencoder.attachHalfQuad(17, 5);
-  Rencoder.attachHalfQuad(13, 14);
+  pinMode(calb, INPUT_PULLUP);
+  // pinMode(17, INPUT_PULLUP);
+  // pinMode(5, INPUT_PULLUP);
+  // pinMode(13, INPUT_PULLUP);
+  // pinMode(14, INPUT_PULLUP);
+  Lencoder.attachHalfQuad(16, 17);
+  Rencoder.attachHalfQuad(25, 26);
 }
 
 void loop() {
