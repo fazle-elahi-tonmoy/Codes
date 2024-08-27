@@ -24,7 +24,7 @@ void setup() {
   grab.write(grab_pos);
   delay(1000);
   Serial.begin(115200);
-  SerialBT.begin("BRC 4");
+  SerialBT.begin("Robot Hand");
 }
 
 void loop() {
