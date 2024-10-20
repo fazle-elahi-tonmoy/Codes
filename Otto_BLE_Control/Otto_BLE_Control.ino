@@ -7,10 +7,10 @@
 #define RIGHTFOOT 7
 #define TRIG 8
 #define ECHO 9
-#define BLE_TX 2
-#define BLE_RX 3
+#define BLE_TX 11
+#define BLE_RX 10
 #define BUZZER 13
-#define sw 10
+#define sw 2
 
 #if defined(ARDUINO_ARCH_ESP32)
 #include "BluetoothSerial.h"
@@ -56,7 +56,7 @@ void setup() {
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT);
   pinMode(sw, INPUT);
-  bluetooth.begin(38400);
+  bluetooth.begin(9600);
   bluetooth.print("AT+NAME" + device_name);
   Ottobot.home();
   v = 0;
@@ -131,16 +131,16 @@ int push(int pin_number) {
   int count = 0;
 repeat:
   unsigned long int timer = 0;
-  if (digitalRead(pin_number) == 0) {       //if the button is pressed
+  if (digitalRead(pin_number) == 1) {       //if the button is pressed
     delay(20);                              //debounce delay
-    while (digitalRead(pin_number) == 0) {  //check if the button is still pressed
+    while (digitalRead(pin_number) == 1) {  //check if the button is still pressed
       delay(20);
       timer += 20;
     }
     if (timer != 0) {  //if the button was really pressed
       timer = 0;
       count++;
-      while (digitalRead(pin_number) == 1) {
+      while (digitalRead(pin_number) == 0) {
         delay(10);
         timer += 10;
         if (timer > 500) return count;

@@ -24,7 +24,7 @@ void setup() {
 void loop() {
   if (!digitalRead(button)) {
     digitalWrite(laser, 1);
-    delay(400);
+    delay(300);
     bool report = radio.write(&value, sizeof(value));
     (report) ? Serial.println("Message Sent: " + String(value)) : Serial.println("Sending Failed!");
     if (report) digitalWrite(buzzer, 1);

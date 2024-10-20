@@ -2,11 +2,13 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 #define button 3
+#define buzzer 4
 bool debug = 0;
 RF24 radio(9, 10);  // CE, CSN
 const byte addresses[6] = "radio1";
 const byte addresses2[7] = "trigger";
 int value = 1234;
+uint32_t reminder;
 
 const int mux_pin1[4] = { 8, 7, 6, 5 };
 const int mux_pin2[4] = { A1, A0, A2, A3 };
@@ -30,30 +32,56 @@ int posx = 0, posy = 0;
 
 void setup() {
   Serial.begin(9600);
+  pinMode(button, INPUT);
+  pinMode(buzzer, OUTPUT);
   if (!radio.begin()) {
     Serial.println("Radio Failed!");
+    while (1) {
+      digitalWrite(buzzer, 1);
+      delay(100);
+      digitalWrite(buzzer, 0);
+      delay(100);
+      digitalWrite(buzzer, 1);
+      delay(100);
+      digitalWrite(buzzer, 0);
+      delay(100);
+      digitalWrite(buzzer, 1);
+      delay(100);
+      digitalWrite(buzzer, 0);
+      delay(1000);
+    }
   }
+  //starting sound
+  digitalWrite(buzzer, 1);
+  delay(100);
+  digitalWrite(buzzer, 0);
+  delay(100);
+  digitalWrite(buzzer, 1);
+  delay(100);
+  digitalWrite(buzzer, 0);
   radio.openReadingPipe(1, addresses2);
   radio.openWritingPipe(addresses);
   radio.setPALevel(RF24_PA_MIN);
   radio.setPayloadSize(sizeof(value));
   radio.startListening();
-  pinMode(button, INPUT);
   for (byte i = 0; i < 4; i++) {
     pinMode(mux_pin1[i], OUTPUT);
     pinMode(mux_pin2[i], OUTPUT);
     digitalWrite(mux_pin2[i], 1);
   }
+
+  reminder = millis();
+  Serial.println("Welcome!");
 }
 
 void loop() {
-
+  reminder_sys();
   if (radio.available()) {
     radio.read(&value, sizeof(value));
     radio.stopListening();
     if (value == 1111) {
       hit = 0;
-      for (byte i = 0; i < 15; i++) {
+      for (int i = 0; i < 15; i++) {
         posx = mux1_array_check(i);
         posy = mux1_ver_value_range[i];
         if (hit) {
@@ -63,7 +91,7 @@ void loop() {
       }
 
       if (!hit) {
-        for (byte i = 0; i < 14; i++) {
+        for (int i = 0; i < 14; i++) {
           posx = mux2_array_check(i);
           posy = mux2_ver_value_range[i];
           if (hit) {
@@ -92,6 +120,18 @@ void loop() {
         delay(500);
       }
       radio.startListening();
+      reminder = millis();
+    }
+  }
+
+  if (Serial.available()) {
+    char x = Serial.read();
+    if (x == 'd') {
+      debug = 1;
+      digitalWrite(buzzer, 1);
+      delay(250);
+      digitalWrite(buzzer, 0);
+      Serial.println("Debug Mode Activated");
     }
   }
 
@@ -99,6 +139,9 @@ void loop() {
   if (r) {
     if (r == 1) {
       debug = 1;
+      digitalWrite(buzzer, 1);
+      delay(250);
+      digitalWrite(buzzer, 0);
       Serial.println("Debug Mode Activated");
     } else if (r == 2) {
       while (1) {
@@ -133,43 +176,5 @@ void loop() {
     }
   }
 
-  if (debug) {
-    bool flag = 0;
-    bool flag_2 = 0;
-    for (int i = 0; i < 15; i++) {
-      mux1_value[i] = mux1_check(i);
-      if (mux1_value[i] > 300) flag = 1;
-    }
-
-    for (int i = 0; i < 14; i++) {
-      mux2_value[i] = mux2_check(i);
-      if (i == 1) mux2_value[i] = 0;
-      else if (mux2_value[i] > 300) flag_2 = 1;
-    }
-    if (flag) {
-      for (int i = 0; i < 15; i++) {
-        if (mux1_value[i] > 999)
-          ;
-        else if (mux1_value[i] > 99) Serial.print("0");
-        else if (mux1_value[i] > 9) Serial.print("00");
-        else Serial.print("000");
-        Serial.print(String(mux1_value[i]) + " ");
-      }
-      Serial.println("mux1");
-      delay(550);
-    }
-
-    else if (flag_2) {
-      for (int i = 0; i < 14; i++) {
-        if (mux2_value[i] > 999)
-          ;
-        else if (mux2_value[i] > 99) Serial.print("0");
-        else if (mux2_value[i] > 9) Serial.print("00");
-        else Serial.print("000");
-        Serial.print(String(mux2_value[i]) + " ");
-      }
-      Serial.println("mux2");
-      delay(550);
-    }
-  }
+  debugging_sys();
 }

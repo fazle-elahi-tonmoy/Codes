@@ -13,14 +13,24 @@ uint32_t timer;
 
 void setup() {
   Serial.begin(9600);
+  pinMode(buzzer, OUTPUT);
   if (!radio.begin()) {
     Serial.println("Radio Failed!");
+    while (1) {
+      digitalWrite(buzzer, 1);
+      delay(100);
+      digitalWrite(buzzer, 0);
+      delay(100);
+      digitalWrite(buzzer, 1);
+      delay(100);
+      digitalWrite(buzzer, 0);
+      delay(1000);
+    }
   }
   radio.openReadingPipe(0, addresses);
   radio.setPALevel(RF24_PA_MIN);
   radio.setPayloadSize(sizeof(value));
   radio.startListening();
-  pinMode(buzzer, OUTPUT);
 }
 
 void loop() {
@@ -29,8 +39,14 @@ void loop() {
     int x = ((value / 100) - 12);
     int y = ((value % 100) - 12);
     StaticJsonDocument<200> jsonDoc;
-    jsonDoc["x_coordinate"] = x * 20;
-    jsonDoc["y_coordinate"] = y * 20;
+
+    if (value == 6666) {
+      jsonDoc["x_coordinate"] = 800;
+      jsonDoc["y_coordinate"] = 800;
+    } else {
+      jsonDoc["x_coordinate"] = x * 15;
+      jsonDoc["y_coordinate"] = y * 15;
+    }
     String jsonString;
     serializeJson(jsonDoc, jsonString);
     Serial.println(jsonString);

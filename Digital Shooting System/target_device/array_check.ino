@@ -1,6 +1,8 @@
-int mux1_array_check(byte a) {
+int mux1_array_check(int a) {
   mux1_value[a] = mux1_check(a);
-  if (mux1_value[a] > 300) {
+  Serial.print(mux1_value[a]);
+  Serial.print(" ");
+  if (mux1_value[a] > 500) {
     for (int i = 0; i < 10; i++)
       if (mux1_value[a] < mux1_check(a)) mux1_value[a] = mux1_check(a);
     hit = 1;
@@ -15,10 +17,9 @@ int mux1_array_check(byte a) {
   return 13;
 }
 
-int mux2_array_check(byte a) {
+int mux2_array_check(int a) {
   mux2_value[a] = mux2_check(a);
-  if (a == 1) mux2_value[a] = 0;
-  if (mux2_value[a] > 300) {
+  if (mux2_value[a] > 500) {
     for (int i = 0; i < 10; i++)
       if (mux2_value[a] < mux2_check(a)) mux2_value[a] = mux2_check(a);
     hit = 1;
