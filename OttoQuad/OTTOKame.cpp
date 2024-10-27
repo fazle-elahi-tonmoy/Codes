@@ -28,14 +28,14 @@
 // BACK_RIGHT_LEG servo 6  Pin 5
 // BACK_LEFT_LEG servo 7  Pin 7
 MiniKame::MiniKame():/* reverse{0, 0, 0, 0, 0, 0, 0, 0}, */trim{0, 0, 0, 0, 0, 0, 0, 0} {
-  board_pins[FRONT_RIGHT_HIP] = 2; // front left inner
-  board_pins[FRONT_LEFT_HIP] = 8; // front right inner
-  board_pins[BACK_RIGHT_HIP] = 4; // back left inner
-  board_pins[BACK_LEFT_HIP] = 6; // back right inner
-  board_pins[FRONT_RIGHT_LEG] = 3; // front left outer
-  board_pins[FRONT_LEFT_LEG] = 9; // front right outer
-  board_pins[BACK_RIGHT_LEG] = 5; // back left outer
-  board_pins[BACK_LEFT_LEG] = 7; // back right outer
+  board_pins[FRONT_RIGHT_HIP] = 5; // front left inner
+  board_pins[FRONT_LEFT_HIP] = 4; // front right inner
+  board_pins[BACK_RIGHT_HIP] = 9; // back left inner
+  board_pins[BACK_LEFT_HIP] = 8; // back right inner
+  board_pins[FRONT_RIGHT_LEG] = 7; // front left outer
+  board_pins[FRONT_LEFT_LEG] = 6; // front right outer
+  board_pins[BACK_RIGHT_LEG] = 11; // back left outer
+  board_pins[BACK_LEFT_LEG] = 10; // back right outer
 }
 void MiniKame::reverseServo(int id) {
   if (reverse[id])
@@ -93,7 +93,7 @@ void MiniKame::init(int Buzzer) {
   }
 
   home();
-  us.init(12, 11);
+  us.init(PIN_Trigger, PIN_Echo);
 }
 void MiniKame::attachServo(){
    for (int i = 0; i < 8; i++) {

@@ -8,120 +8,102 @@
 #include "Arduino.h"
 #include "MaxMatrix.h"
 
-MaxMatrix::MaxMatrix(byte _data, byte _load, byte _clock, byte _num) 
-{
-	data = _data;
-	load = _load;
-	clock = _clock;
-	num = _num;
-	for (int i=0; i<80; i++)
-		buffer[i] = 0;
+MaxMatrix::MaxMatrix(byte _data, byte _load, byte _clock, byte _num) {
+  data = _data;
+  load = _load;
+  clock = _clock;
+  num = _num;
+  for (int i = 0; i < 80; i++)
+    buffer[i] = 0;
 }
 
-void MaxMatrix::init()
-{
-	pinMode(data,  OUTPUT);
-	pinMode(clock, OUTPUT);
-	pinMode(load,  OUTPUT);
-	digitalWrite(clock, HIGH); 
+void MaxMatrix::init() {
+  pinMode(data, OUTPUT);
+  pinMode(clock, OUTPUT);
+  pinMode(load, OUTPUT);
+  digitalWrite(clock, HIGH);
 
-	setCommand(max7219_reg_scanLimit, 0x07);      
-	setCommand(max7219_reg_decodeMode, 0x00);  // using an led matrix (not digits)
-	setCommand(max7219_reg_shutdown, 0x01);    // not in shutdown mode
-	setCommand(max7219_reg_displayTest, 0x00); // no display test
-	
-	// empty registers, turn all LEDs off
-	clearMatrix();
-	
-	setIntensity(0x0f);    // the first 0x0f is the value you can set
+  setCommand(max7219_reg_scanLimit, 0x07);
+  setCommand(max7219_reg_decodeMode, 0x00);   // using an led matrix (not digits)
+  setCommand(max7219_reg_shutdown, 0x01);     // not in shutdown mode
+  setCommand(max7219_reg_displayTest, 0x00);  // no display test
+
+  // empty registers, turn all LEDs off
+  clearMatrix();
+
+  setIntensity(0x0f);  // the first 0x0f is the value you can set
 }
 
-void MaxMatrix::setIntensity(byte intensity)
-{
-	setCommand(max7219_reg_intensity, intensity);
+void MaxMatrix::setIntensity(byte intensity) {
+  setCommand(max7219_reg_intensity, intensity);
 }
 
-void MaxMatrix::clearMatrix()
-{
-	for (int i=0; i<8; i++) 
-		setColumnAll(i,0);
-		
-	for (int i=0; i<80; i++)
-		buffer[i] = 0;
+void MaxMatrix::clearMatrix() {
+  for (int i = 0; i < 8; i++)
+    setColumnAll(i, 0);
+
+  for (int i = 0; i < 80; i++)
+    buffer[i] = 0;
 }
 
-void MaxMatrix::setCommand(byte command, byte value)
-{
-	digitalWrite(load, LOW);    
-	for (int i=0; i<num; i++) 
-	{
-		shiftOut(data, clock, MSBFIRST, command);
-		shiftOut(data, clock, MSBFIRST, value);
-	}
-	digitalWrite(load, LOW);
-	digitalWrite(load, HIGH);
+void MaxMatrix::setCommand(byte command, byte value) {
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++) {
+    shiftOut(data, clock, MSBFIRST, command);
+    shiftOut(data, clock, MSBFIRST, value);
+  }
+  digitalWrite(load, LOW);
+  digitalWrite(load, HIGH);
 }
 
 
-void MaxMatrix::setColumn(byte col, byte value)
-{
-	int n = col / 8;
-	int c = col % 8;
-	digitalWrite(load, LOW);    
-	for (int i=0; i<num; i++) 
-	{
-		if (i == n)
-		{
-			shiftOut(data, clock, MSBFIRST, c + 1);
-			shiftOut(data, clock, MSBFIRST, value);
-		}
-		else
-		{
-			shiftOut(data, clock, MSBFIRST, 0);
-			shiftOut(data, clock, MSBFIRST, 0);
-		}
-	}
-	digitalWrite(load, LOW);
-	digitalWrite(load, HIGH);
-	
-	buffer[col] = value;
+void MaxMatrix::setColumn(byte col, byte value) {
+  int n = col / 8;
+  int c = col % 8;
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++) {
+    if (i == n) {
+      shiftOut(data, clock, MSBFIRST, c + 1);
+      shiftOut(data, clock, MSBFIRST, value);
+    } else {
+      shiftOut(data, clock, MSBFIRST, 0);
+      shiftOut(data, clock, MSBFIRST, 0);
+    }
+  }
+  digitalWrite(load, LOW);
+  digitalWrite(load, HIGH);
+
+  buffer[col] = value;
 }
 
-void MaxMatrix::setColumnAll(byte col, byte value)
-{
-	digitalWrite(load, LOW);    
-	for (int i=0; i<num; i++) 
-	{
-		shiftOut(data, clock, MSBFIRST, col + 1);
-		shiftOut(data, clock, MSBFIRST, value);
-		buffer[col * i] = value;
-	}
-	digitalWrite(load, LOW);
-	digitalWrite(load, HIGH);
+void MaxMatrix::setColumnAll(byte col, byte value) {
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++) {
+    shiftOut(data, clock, MSBFIRST, col + 1);
+    shiftOut(data, clock, MSBFIRST, value);
+    buffer[col * i] = value;
+  }
+  digitalWrite(load, LOW);
+  digitalWrite(load, HIGH);
 }
 
-void MaxMatrix::setDot(byte col, byte row, byte value)
-{
-    bitWrite(buffer[col], row, value);
+void MaxMatrix::setDot(byte col, byte row, byte value) {
+  bitWrite(buffer[col], row, value);
 
-	int n = col / 8;
-	int c = col % 8;
-	digitalWrite(load, LOW);    
-	for (int i=0; i<num; i++) 
-	{
-		if (i == n)
-		{
-			shiftOut(data, clock, MSBFIRST, c + 1);
-			shiftOut(data, clock, MSBFIRST, buffer[col]);
-		}
-		else
-		{
-			shiftOut(data, clock, MSBFIRST, 0);
-			shiftOut(data, clock, MSBFIRST, 0);
-		}
-	}
-	digitalWrite(load, LOW);
-	digitalWrite(load, HIGH);
+  int n = col / 8;
+  int c = col % 8;
+  digitalWrite(load, LOW);
+  for (int i = 0; i < num; i++) {
+    if (i == n) {
+      shiftOut(data, clock, MSBFIRST, c + 1);
+      shiftOut(data, clock, MSBFIRST, buffer[col]);
+    } else {
+      shiftOut(data, clock, MSBFIRST, 0);
+      shiftOut(data, clock, MSBFIRST, 0);
+    }
+  }
+  digitalWrite(load, LOW);
+  digitalWrite(load, HIGH);
 }
 
 /* void MaxMatrix::writeSprite(int x, int y, const byte* sprite)
@@ -213,10 +195,9 @@ void MaxMatrix::shiftDown(bool rotate)
 */
 // rutina para Zowi, para meter sus caritas en la matriz de 8
 void MaxMatrix::writeFull(unsigned long value) {
-	for (int r=0; r<5;r++){
-            for (int c=0; c<6; c++){
-                setDot(6-c,7-r,(1L & (value >> r*6+c)));
-                }
-            }
+  for (int r = 4; r >=0; r--) {
+    for (int c = 5; c >= 0; c--) {
+      setDot(7 - r, 6 - c, (1L & (value >> r * 6 + c)));
+    }
+  }
 }
-

@@ -15,9 +15,9 @@
 #define BACK_LEFT_HIP 5
 #define BACK_RIGHT_LEG 6
 #define BACK_LEFT_LEG 7
-//#define PIN_Buzzer  13
-#define PIN_Trigger 12
-#define PIN_Echo    11
+#define PIN_Buzzer  13
+#define PIN_Trigger A5
+#define PIN_Echo    A4
 
 #define zero_code                  0b00001100010010010010010010001100
 #define one_code                   0b00000100001100000100000100001110
