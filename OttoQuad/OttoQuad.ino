@@ -9,6 +9,7 @@ OttoSerialCommand SerialCmd;  //The SerialCommand object
 #define LED_PIN 13
 #define PIN_Buzzer 13
 #define TIME_INTERVAL 5000
+#define TOUCH 12
 /*
    (servo PIN CONNECTIONS)
    __________ __________ _________________
@@ -107,16 +108,37 @@ void setup() {
   SerialCmd.addCommand("I", requestProgramId);
   SerialCmd.addCommand("J", requestMode);
   SerialCmd.addDefaultHandler(receiveStop);
+  pinMode(TOUCH, INPUT);
 }
 ///////////////////////////////////////////////////////////////////
 //-- Principal Loop ---------------------------------------------//
 ///////////////////////////////////////////////////////////////////
 void loop() {
-
   if (Serial.available() > 0 && MODE != 4) {
     SerialCmd.readSerial();
     //MODE=4;
     robot.putMouth(happyOpen);
+  }
+  byte r = touch();
+  if (r) {
+    if (r == 1) {
+      randomDance = random(5, 15);  //5,20
+      if (randomDance == 5) randomDance = 6;
+      robot.putMouth(random(10, 21));
+      robot.home();  //Otto stop
+      pause(750);
+      gaits(randomDance);
+      pause(5000);
+      gaits(5);
+    }
+
+    else if (r == 2) {
+      if (MODE == 2) {
+        MODE = 0;
+        robot.home();
+        robot.refresh();
+      } else MODE = 2;
+    }
   }
 
   switch (MODE) {
@@ -138,7 +160,6 @@ void loop() {
       robot.home();  //Otto stop
       pause(750);
       gaits(randomDance);
-
       pause(8000);
       break;
 

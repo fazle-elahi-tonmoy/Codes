@@ -195,8 +195,8 @@ void MaxMatrix::shiftDown(bool rotate)
 */
 // rutina para Zowi, para meter sus caritas en la matriz de 8
 void MaxMatrix::writeFull(unsigned long value) {
-  for (int r = 4; r >=0; r--) {
-    for (int c = 5; c >= 0; c--) {
+  for (int r = 4; r >= 0; r--) {
+    for (int c = 0; c < 6; c++) {
       setDot(7 - r, 6 - c, (1L & (value >> r * 6 + c)));
     }
   }
