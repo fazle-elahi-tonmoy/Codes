@@ -8,7 +8,7 @@ void display_refresh() {
   if (gas_value < 100) lcd.print(" ");
   if (gas_value < 10) lcd.print(" ");
   lcd.print(" ");
-  lcd.print(temp);
+  lcd.print((int)temp);
   if (temp < 10) lcd.print(" ");
   lcd.print(" ");
   lcd.print(hum);
@@ -18,5 +18,5 @@ void display_refresh() {
   lcd.print(" ");
   lcd.print(bulb_auto);
   lcd.print(" ");
-  lcd.print(theft_alarm);
+  lcd.print(security_mode);
 }

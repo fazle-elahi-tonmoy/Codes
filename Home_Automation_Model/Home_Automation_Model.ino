@@ -31,21 +31,21 @@ Servo window;
 DHT dht(DHTPIN, DHT11);
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-bool bulb_state = 0, fan_state = 0, bulb_auto = 0, theft_alarm = 0, rain_state;
+bool bulb_state = 0, fan_state = 0, bulb_auto = 0, security_mode = 0, theft_detect = 0, buzzer_state = 0, window_state = 0, rain_state = 0, rain_prev_state = 0;
 bool setup_mode = 0, wifi_status = 0;
 byte fan_speed = 255;
 byte temp_speed = 0;
-byte window_open = 120, window_close = 40;
-uint32_t refresh_timer = 0;
-float gas_value, temp, hum;
+byte window_open = 60, window_close = 120;
+uint32_t refresh_timer = 0, short_refresh = 0;
+float temp;
+int gas_value, hum;
 
 static LightBulb bulb("Bulb", NULL, false);
 static Switch fan("Fan", NULL, false);
-static Switch buzz("Alarm", NULL, false);
-static TemperatureSensor temparature("Temparature", NULL, 25.0);
-static TemperatureSensor humidity("Humidity", NULL, 70.0);
-static TemperatureSensor gas("Gas Value", NULL, 0);
-static TemperatureSensor rain("Rain Status", NULL, 0);
+static Device laser("Security", "esp.device.motion-sensor");
+static Device sensor("Sensors", "esp.device.other");
+static Device Window("Window", "esp.device.blinds-internal");
+static TemperatureSensor temperature("Temperature", NULL, 25.0);
 
 void setup() {
   Serial.begin(115200);
@@ -68,18 +68,30 @@ void setup() {
 
   Node my_node;
   my_node = RMaker.initNode("Home Automation");
+
+  Param gas("Gas Value", "custom.param.gasval", value(0), PROP_FLAG_READ);
+  Param humidity("Humidity", "custom.param.humidity", value(75), PROP_FLAG_READ);
+  Param rain("Rain Status", "custom.param.rainval", value(0), PROP_FLAG_READ);
+
   bulb.addPowerParam(false, "Automation");
-  buzz.addPowerParam(false, "Security Status");
   fan.addSpeedParam(0, "Speed");
+  laser.addPowerParam(false, "Buzzer State");
+  laser.addPowerParam(false, "Security Mode");
+  laser.addPowerParam(false, "Theft Detection");
+  Window.addPowerParam(false, "Window Closed");
+  sensor.addParam(humidity);
+  sensor.addParam(gas);
+  sensor.addParam(rain);
+  laser.addCb(write_callback);
   bulb.addCb(write_callback);
   fan.addCb(write_callback);
+  Window.addCb(write_callback);
   my_node.addDevice(bulb);
   my_node.addDevice(fan);
-  my_node.addDevice(buzz);
-  my_node.addDevice(temparature);
-  my_node.addDevice(humidity);
-  my_node.addDevice(gas);
-  my_node.addDevice(rain);
+  my_node.addDevice(laser);
+  my_node.addDevice(sensor);
+  my_node.addDevice(temperature);
+  my_node.addDevice(Window);
 
   RMaker.enableOTA(OTA_USING_TOPICS);
   RMaker.enableTZService();
@@ -95,55 +107,74 @@ void setup() {
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
-  lcd.print("   TECH TOPIA   ");
+  lcd.print("   SMART HOME   ");
   refresh_timer = millis();
   dht.begin();
 }
 
 void loop() {
   if (push(sw_alarm)) {
-    theft_alarm = !theft_alarm;
-    if (!theft_alarm) digitalWrite(buzzer, 0);
+    if (theft_detect) {
+      theft_detect = 0;
+      buzzer_state = 0;
+      laser.updateAndReportParam("Theft Detection", theft_detect);
+      digitalWrite(buzzer, buzzer_state);
+    }
+
+    else {
+      security_mode = !security_mode;
+      laser.updateAndReportParam("Security Mode", security_mode);
+      display_refresh();
+    }
   }
 
   if (push(sw_light)) {
     bulb_state = !bulb_state;
     digitalWrite(bulb_pin, bulb_state);
     bulb.updateAndReportParam("Power", bulb_state);
+    display_refresh();
   }
 
   if (push(sw_autolight)) {
     bulb_auto = !bulb_auto;
     if (!bulb_auto) digitalWrite(bulb_pin, bulb_state);
     bulb.updateAndReportParam("Automation", bulb_auto);
+    display_refresh();
   }
 
   if (push(sw_fan)) {
     fan_state = !fan_state;
     (fan_state) ? ledcWrite(fan_channel, fan_speed) : ledcWrite(fan_channel, 0);
     fan.updateAndReportParam("Power", fan_state);
+    display_refresh();
   }
 
   temp_speed = map(analogRead(potentiometerPin), 0, 4095, 0, 5) * 50;
   if (temp_speed != fan_speed) {
     fan_speed = temp_speed;
     (fan_state) ? ledcWrite(fan_channel, fan_speed) : ledcWrite(fan_channel, 0);
+    delay(1000);
     fan.updateAndReportParam("Speed", fan_speed / 50);
+    display_refresh();
   }
 
   if (bulb_auto && bulb_state) {
-    Serial.println(digitalRead(ldr_autoPin));
     (!digitalRead(ldr_autoPin)) ? digitalWrite(bulb_pin, 0) : digitalWrite(bulb_pin, 1);
+    display_refresh();
   }
 
-  if (theft_alarm) {
-    if (digitalRead(ldr_laserPin)) digitalWrite(buzzer, 1);
+  if (security_mode) {
+    if (digitalRead(ldr_laserPin) && !theft_detect) {
+      theft_detect = 1;
+      buzzer_state = 1;
+      laser.updateAndReportParam("Theft Detection", theft_detect);
+      laser.updateAndReportParam("Buzzer State", buzzer_state);
+      digitalWrite(buzzer, buzzer_state);
+    }
   }
 
-  if (millis() - refresh_timer > 5000) {
+  if (millis() - refresh_timer > 30000) {
     refresh_timer = millis();
-    rain_state = digitalRead(rainPin);
-    (rain_state) ? window.write(window_open) : window.write(window_close);
     gas_value = analogRead(gasPin);
     temp = dht.readTemperature();
     hum = dht.readHumidity();
@@ -155,13 +186,22 @@ void loop() {
       lcd.setCursor(0, 1);
       lcd.print("  SCAN QR CODE  ");
     }
-    temparature.updateAndReportParam("Temparature", (float)temp);
-    humidity.updateAndReportParam("Temparature", (float)hum);
-    gas.updateAndReportParam("Temparature", (float)gas_value);
-    rain.updateAndReportParam("Temparature", (float)rain_state);
-
-    (WiFi.status() == WL_CONNECTED) ? digitalWrite(indicator, 1) : digitalWrite(indicator, 0);
+    if (!isnan(temp)) temperature.updateAndReportParam("Temperature", temp);
+    if (!isnan(hum)) sensor.updateAndReportParam("Humidity", hum);
+    sensor.updateAndReportParam("Gas Value", gas_value);
   }
 
+  rain_state = !digitalRead(rainPin);
+  if (rain_state != rain_prev_state) {
+    rain_prev_state = window_state = rain_state;
+    (!window_state) ? window.write(window_open) : window.write(window_close);
+    sensor.updateAndReportParam("Rain Status", rain_state);
+    Window.updateAndReportParam("Window Closed", window_state);
+  }
+
+  if (millis() - short_refresh > 1000) {
+    short_refresh = millis();
+    (WiFi.status() == WL_CONNECTED) ? digitalWrite(indicator, 1) : digitalWrite(indicator, 0);
+  }
   reset_protocol();
 }

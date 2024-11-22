@@ -34,16 +34,31 @@ void write_callback(Device *device, Param *param, const param_val_t val,
     }
   }
 
-  if (strcmp(device_name, "Alarm") == 0) {
-    if (strcmp(param_name, "Power") == 0) {
+  if (strcmp(device_name, "Security") == 0) {
+    if (strcmp(param_name, "Buzzer State") == 0) {
       Serial.printf("Received value = %s for %s - %s\n", val.val.b ? "true" : "false", device_name, param_name);
       digitalWrite(buzzer, val.val.b);
       param->updateAndReport(val);
     }
 
-    if (strcmp(param_name, "Security Status") == 0) {
-      Serial.printf("Received value = %d for %s - %s\n", val.val.b ? "true" : "false", device_name, param_name);
-      theft_alarm = val.val.b;
+    if (strcmp(param_name, "Security Mode") == 0) {
+      Serial.printf("Received value = %s for %s - %s\n", val.val.b ? "true" : "false", device_name, param_name);
+      security_mode = val.val.b;
+      param->updateAndReport(val);
+    }
+
+    if (strcmp(param_name, "Theft Detection") == 0) {
+      Serial.printf("Received value = %s for %s - %s\n", val.val.b ? "true" : "false", device_name, param_name);
+      theft_detect = val.val.b;
+      param->updateAndReport(val);
+    }
+  }
+
+  if (strcmp(device_name, "Window") == 0) {
+    if (strcmp(param_name, "Window Closed") == 0) {
+      Serial.printf("Received value = %s for %s - %s\n", val.val.b ? "true" : "false", device_name, param_name);
+      window_state = val.val.b;
+      (!window_state) ? window.write(window_open) : window.write(window_close);
       param->updateAndReport(val);
     }
   }
