@@ -11,26 +11,26 @@ WiFiManager wm;
 
 int hourlyTarget, hourlyAchievement, dailyTarget, dailyAchievement, defectQuantity;
 float cycleTime;
+String machineMac, user, machineNo, buyer, style, workingHour, npt, process;
 
 
-// পিন ডেফাইন
-#define TFT_CS 5   // ডিসপ্লে CS পিন
-#define TFT_DC 3   // ডিসপ্লে DC পিন
-#define TFT_RST 8  // ডিসপ্লে RST পিন
-#define SD_CS 21   // SD কার্ড CS পিন
+#define SD_CS 21  // SD কার্ড CS পিন
 #define OK_PIN 14
-#define Back_PIN 25
+#define Back_PIN 27
 #define Maintanance_PIN 26
-#define Help_PIN 27
+#define Help_PIN 25
 #define POW_PIN 33
 #define WiFi_PIN 32
 #define buzzer 15
+
+#define press_time 5
 
 
 // ডিসপ্লে অবজেক্ট তৈরি
 TFT_eSPI tft = TFT_eSPI();
 
-bool power_state = 0;
+uint32_t press_timer;
+bool npt_mode = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -46,39 +46,50 @@ void setup() {
   tft.begin();
   tft.setRotation(3);
   tft.fillScreen(TFT_BLACK);
-  starting_sequence();
-  tft.fillScreen(TFT_WHITE);
+  //waiting to press the power button for 2 sec
+  while (1) {
+    if (long_press(POW_PIN, 100)) {
+      digitalWrite(buzzer, 1);
+      delay(100);
+      digitalWrite(buzzer, 0);
+      delay(100);
+      digitalWrite(buzzer, 1);
+      delay(100);
+      digitalWrite(buzzer, 0);
+      break;
+    }
+  }
   disp_wifi();
-
   WiFi.mode(WIFI_STA);
   wm.autoConnect("WiFi Setup");
   welcome_screen();
-
-  // sendHttpRequest();
+  delay(2000);
+  sendHttpRequest();
+  main_screen_update(1);
 }
 
 void loop() {
-  if (!digitalRead(OK_PIN)) {
-    hourlyAchievement++;
-    String value;
-    if (hourlyAchievement < 10) value = " " + String(hourlyAchievement) + "  ";
-    else if (hourlyAchievement < 100) value = String(hourlyAchievement) + "  ";
-    else value = String(hourlyAchievement) + " ";
-    tft.drawString(value, 345, 190);
+  if (!digitalRead(OK_PIN) && millis() - press_timer > press_time * 1000) {
+    press_timer = millis();
+    sendHttpRequest();
+    main_screen_update(0);
+  }
+
+  if (!digitalRead(Maintanance_PIN)) {
+    npt_mode = 1;
+    npt_screen();
     delay(1000);
   }
-  starting_sequence();
-  if (!digitalRead(WiFi_PIN)) {
-    delay(20);
-    uint16_t t = 0;
-    while (!digitalRead(WiFi_PIN)) {
-      delay(20);
-      t++;
-      if (t > 250) {
-        wm.ResetSettings();
-        wm.autoConnect("WiFi Setup");
-        ESP.restart();
-      }
-    }
+
+  if (!digitalRead(Back_PIN)) {
+    npt_mode = 0;
+    main_screen_update(1);
+    delay(1000);
+  }
+
+  if (long_press(POW_PIN, 150)) ESP.restart();
+  if (long_press(WiFi_PIN, 250)) {
+    wm.resetSettings();
+    ESP.restart();
   }
 }

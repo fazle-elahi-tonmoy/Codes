@@ -17,14 +17,14 @@ void sendHttpRequest() {
 
       if (!error) {
         JsonObject data = doc["data"];
-        String machineMac = data["machine_mac"];
-        String process = data["process"];
-        String user = data["user"];
-        String machineNo = data["machine_no"];
-        String buyer = data["buyer"];
-        String style = data["style"];
-        String workingHour = data["working_hour"];
-        String npt = data["npt"];
+        machineMac = data["machine_mac"].as<const char*>();
+        process = data["process"].as<const char*>();
+        user = data["user"].as<const char*>();
+        machineNo = data["machine_no"].as<const char*>();
+        buyer = data["buyer"].as<const char*>();
+        style = data["style"].as<const char*>();
+        workingHour = data["working_hour"].as<const char*>();
+        npt = data["npt"].as<const char*>();
         hourlyTarget = data["hourly_target"];
         hourlyAchievement = data["hourly_achievement"];
         dailyTarget = data["daily_target"];
@@ -50,23 +50,6 @@ void sendHttpRequest() {
         Serial.println("Cycle Time: " + String(cycleTime));
         Serial.println("_______________________________");
 
-        // tft.setTextSize(1);
-        tft.setTextColor(TFT_BLACK, TFT_WHITE);
-        tft.setFreeFont(FSS9);
-        tft.drawString(user, 100, 38);
-        tft.drawString(process, 100, 66);
-        tft.drawString(buyer, 100, 94);
-        tft.drawString(workingHour, 100, 122);
-        tft.drawString(style, 350, 66);
-        tft.drawString(npt, 350, 94);
-        tft.drawString(machineNo, 350, 122);
-        tft.setFreeFont(FSSB9);
-        tft.drawString(String(hourlyTarget), 100, 190);
-        tft.drawString(String(hourlyAchievement), 345, 190);
-        tft.drawString(String(dailyTarget), 50, 275);
-        tft.drawString(String(dailyAchievement), 160, 275);
-        tft.drawString(String(defectQuantity), 290, 275);
-        tft.drawString(String(cycleTime), 400, 275);
       }
     }
 
