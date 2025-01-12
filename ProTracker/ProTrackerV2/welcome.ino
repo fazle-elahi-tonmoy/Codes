@@ -9,5 +9,5 @@ void welcome_screen() {
   tft.setFreeFont(FSSB24);
   tft.drawString("MZM Textile Ltd", 105, 165);
   drawImage(140, 230, 201, 41, skylark_201_41);
-  drawImage(15, 120, 81, 91, MZM_81_91);
+  drawImage(15, 120, 80, 90, MZM_80x90);
 }

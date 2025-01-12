@@ -1,4 +1,4 @@
-void sendSummeryRequest() {
+bool sendSummeryRequest() {
   String url = main_url + String(WiFi.macAddress()) + "/summary";
 
   if (WiFi.status() == WL_CONNECTED) {
@@ -7,8 +7,6 @@ void sendSummeryRequest() {
 
     if (httpResponseCode == 200) {
       String response = http.getString();
-      Serial.println("_______________________________");
-      Serial.println("Data sent successfully.");
 
 
       StaticJsonDocument<1024> doc;
@@ -31,7 +29,6 @@ void sendSummeryRequest() {
         defectQuantity = data["defect_quantity"];
         cycleTime = data["cycle_time"];
 
-        Serial.println("Extracted Data:");
         Serial.println("_______________________________");
         Serial.println("Machine MAC: " + machineMac);
         Serial.println("Process: " + process);
@@ -49,13 +46,16 @@ void sendSummeryRequest() {
         Serial.println("Cycle Time: " + String(cycleTime));
         Serial.println("_______________________________");
       }
+      http.end();
+      return 1;
     }
 
     else {
       Serial.println("Error code: " + String(httpResponseCode));
+      http.end();
     }
-    http.end();
   }
+  return 0;
 }
 
 void sendOKrequest() {
@@ -83,19 +83,11 @@ void sendOKrequest() {
       main_screen_update(0);
       http.end();
       return;
-    } else http.end();
+    } else {
+      http.end();
+      error_screen();
+    }
   }
-  digitalWrite(API_FAIL_LED, 1);
-  delay(250);
-  digitalWrite(API_FAIL_LED, 0);
-  delay(250);
-  digitalWrite(API_FAIL_LED, 1);
-  delay(250);
-  digitalWrite(API_FAIL_LED, 0);
-  delay(250);
-  digitalWrite(API_FAIL_LED, 1);
-  delay(250);
-  digitalWrite(API_FAIL_LED, 0);
 }
 
 void checkNPT() {
@@ -154,6 +146,7 @@ bool sendData(String req) {
     else {
       Serial.println("Error code: " + String(httpResponseCode));
       http.end();
+      error_screen();
       return 0;
     }
   }

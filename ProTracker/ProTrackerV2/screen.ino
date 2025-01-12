@@ -1,6 +1,4 @@
 void main_screen_update(bool a) {
-  digitalWrite(NPT_LED, 0);
-  digitalWrite(active_LED, 1);
   if (a) {
     tft.fillScreen(TFT_WHITE);
     drawImage(159, 2, 162, 30, MZM_Textile_162x30);
@@ -40,6 +38,8 @@ void main_screen_update(bool a) {
     tft.drawString("Cycle Time", 415, 249);
   }
 
+  tft.fillRoundRect(90, 35, 300, 24, 10, TFT_WHITE);
+  tft.drawRoundRect(90, 35, 300, 24, 10, TFT_BLACK);
   tft.fillRoundRect(90, 63, 180, 24, 10, TFT_WHITE);
   tft.drawRoundRect(90, 63, 180, 24, 10, TFT_BLACK);
   tft.fillRoundRect(90, 91, 180, 24, 10, TFT_WHITE);
@@ -80,4 +80,8 @@ void main_screen_update(bool a) {
   tft.drawString(String(dailyAchievement), 180, 285);
   tft.drawString(String(defectQuantity), 300, 285);
   tft.drawString(String(cycleTime), 415, 285);
+  digitalWrite(NPT_LED, 0);
+  digitalWrite(active_LED, 1);
+  printLocalTime();
+  second_refresh = millis();
 }
