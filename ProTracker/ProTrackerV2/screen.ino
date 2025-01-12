@@ -1,4 +1,6 @@
 void main_screen_update(bool a) {
+  digitalWrite(NPT_LED, 0);
+  digitalWrite(active_LED, 1);
   if (a) {
     tft.fillScreen(TFT_WHITE);
     drawImage(159, 2, 162, 30, MZM_Textile_162x30);
@@ -11,19 +13,12 @@ void main_screen_update(bool a) {
     tft.setFreeFont(FSSB9);
     tft.setTextDatum(MR_DATUM);
     tft.drawString("User:", 85, 45);
-    tft.drawRoundRect(90, 35, 300, 24, 10, TFT_BLACK);
     tft.drawString("Process:", 85, 73);
-    tft.drawRoundRect(90, 63, 180, 24, 10, TFT_BLACK);
     tft.drawString("Buyer:", 85, 101);
-    tft.drawRoundRect(90, 91, 180, 24, 10, TFT_BLACK);
     tft.drawString("Work hr:", 85, 129);
-    tft.drawRoundRect(90, 119, 100, 24, 10, TFT_BLACK);
     tft.drawString("Style:", 335, 73);
-    tft.drawRoundRect(340, 63, 120, 24, 10, TFT_BLACK);
     tft.drawString("NPT:", 335, 101);
-    tft.drawRoundRect(340, 91, 120, 24, 10, TFT_BLACK);
     tft.drawString("Machine NO:", 335, 129);
-    tft.drawRoundRect(340, 119, 120, 24, 10, TFT_BLACK);
     //main green boxes
     tft.fillRect(10, 150, 225, 90, 0x04AD);
     tft.fillRect(245, 150, 225, 90, 0x04AD);
@@ -43,17 +38,31 @@ void main_screen_update(bool a) {
     tft.drawString("D.Achieve", 180, 249);
     tft.drawString("Defect QTY", 300, 249);
     tft.drawString("Cycle Time", 415, 249);
-    tft.setTextColor(TFT_BLACK, TFT_WHITE);
-    tft.setTextDatum(TL_DATUM);
-    tft.setFreeFont(FSS9);
-    tft.drawString(user, 100, 38);
-    tft.drawString(process, 100, 66);
-    tft.drawString(buyer, 100, 94);
-    tft.drawString(workingHour, 100, 122);
-    tft.drawString(style, 350, 66);
-    tft.drawString(npt, 350, 94);
-    tft.drawString(machineNo, 350, 122);
   }
+
+  tft.fillRoundRect(90, 63, 180, 24, 10, TFT_WHITE);
+  tft.drawRoundRect(90, 63, 180, 24, 10, TFT_BLACK);
+  tft.fillRoundRect(90, 91, 180, 24, 10, TFT_WHITE);
+  tft.drawRoundRect(90, 91, 180, 24, 10, TFT_BLACK);
+  tft.fillRoundRect(90, 119, 100, 24, 10, TFT_WHITE);
+  tft.drawRoundRect(90, 119, 100, 24, 10, TFT_BLACK);
+  tft.fillRoundRect(340, 63, 120, 24, 10, TFT_WHITE);
+  tft.drawRoundRect(340, 63, 120, 24, 10, TFT_BLACK);
+  tft.fillRoundRect(340, 91, 120, 24, 10, TFT_WHITE);
+  tft.drawRoundRect(340, 91, 120, 24, 10, TFT_BLACK);
+  tft.fillRoundRect(340, 119, 120, 24, 10, TFT_WHITE);
+  tft.drawRoundRect(340, 119, 120, 24, 10, TFT_BLACK);
+
+  tft.setTextColor(TFT_BLACK, TFT_WHITE);
+  tft.setTextDatum(TL_DATUM);
+  tft.setFreeFont(FSS9);
+  tft.drawString(user, 100, 38);
+  tft.drawString(process, 100, 66);
+  tft.drawString(buyer, 100, 94);
+  tft.drawString(workingHour, 100, 122);
+  tft.drawString(style, 350, 66);
+  tft.drawString(npt, 350, 94);
+  tft.drawString(machineNo, 350, 122);
 
   tft.fillRoundRect(60, 195, 125, 30, 10, TFT_WHITE);
   tft.fillRoundRect(295, 195, 125, 30, 10, TFT_WHITE);

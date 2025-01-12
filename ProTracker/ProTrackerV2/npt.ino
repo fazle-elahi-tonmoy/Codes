@@ -1,4 +1,6 @@
 void npt_screen() {
+  digitalWrite(NPT_LED, 1);
+  digitalWrite(active_LED, 0);
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE);
   tft.setFreeFont(FSSB9);

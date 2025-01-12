@@ -8,10 +8,12 @@
 #include "fonts.h"
 #include "bitmap.h"
 WiFiManager wm;
+HTTPClient http;
 
 int hourlyTarget, hourlyAchievement, dailyTarget, dailyAchievement, defectQuantity;
 float cycleTime;
-String machineMac, user, machineNo, buyer, style, workingHour, npt, process;
+String machineMac, user, machineNo, buyer, style, workingHour, npt, process, npt_start_time, npt_status;
+String main_url = "http://163.47.84.201:9090/garments-pro/protracker/sewing-droplets/iot/";
 
 
 #define SD_CS 21  // SD কার্ড CS পিন
@@ -21,21 +23,28 @@ String machineMac, user, machineNo, buyer, style, workingHour, npt, process;
 #define Help_PIN 25
 #define POW_PIN 33
 #define WiFi_PIN 32
-#define buzzer 15
+#define buzzer 13
+#define active_LED 16
+#define API_OK_LED 17
+#define API_FAIL_LED 22
+#define NPT_LED 19
 
-#define press_time 5
+#define press_time 3
 
 
 // ডিসপ্লে অবজেক্ট তৈরি
 TFT_eSPI tft = TFT_eSPI();
 
-uint32_t press_timer;
+uint32_t press_timer, npt_timer;
 bool npt_mode = 0;
 
 void setup() {
   Serial.begin(115200);
   pinMode(buzzer, OUTPUT);
-  digitalWrite(buzzer, 0);
+  pinMode(active_LED, OUTPUT);
+  pinMode(API_FAIL_LED, OUTPUT);
+  pinMode(API_OK_LED, OUTPUT);
+  pinMode(NPT_LED, OUTPUT);
   pinMode(OK_PIN, INPUT_PULLUP);
   pinMode(Back_PIN, INPUT_PULLUP);
   pinMode(Maintanance_PIN, INPUT_PULLUP);
@@ -64,32 +73,66 @@ void setup() {
   wm.autoConnect("WiFi Setup");
   welcome_screen();
   delay(2000);
-  sendHttpRequest();
+  sendSummeryRequest();
   main_screen_update(1);
 }
 
 void loop() {
-  if (!digitalRead(OK_PIN) && millis() - press_timer > press_time * 1000) {
-    press_timer = millis();
-    sendHttpRequest();
-    main_screen_update(0);
+  if (!npt_mode) {
+
+    if (!digitalRead(OK_PIN) && millis() - press_timer > press_time * 1000) {
+      press_timer = millis();
+      sendOKrequest();
+    }
+
+    if (!digitalRead(Back_PIN)) {
+      digitalWrite(active_LED, 1);
+      main_screen_update(1);
+      delay(1000);
+    }
+
+    if (!digitalRead(Help_PIN)) {
+      bool check = sendData("/help");
+      if (check) {
+        digitalWrite(active_LED, 0);
+        tft.fillScreen(TFT_WHITE);
+        tft.setTextColor(TFT_BLACK);
+        tft.setFreeFont(FSSB24);
+        tft.setTextDatum(MC_DATUM);
+        tft.drawString("Help Requested", 240, 160);
+      }
+      delay(1000);
+    }
+
+    if (!digitalRead(Maintanance_PIN)) {
+      bool check = sendData("/maintenance");
+      if (check) {
+        digitalWrite(active_LED, 0);
+        tft.fillScreen(TFT_WHITE);
+        tft.setTextColor(TFT_BLACK);
+        tft.setFreeFont(FSSB18);
+        tft.setTextDatum(MC_DATUM);
+        tft.drawString("Maintanance Requested", 240, 160);
+      }
+      delay(1000);
+    }
+
+    if (long_press(WiFi_PIN, 250)) {
+      wm.resetSettings();
+      ESP.restart();
+    }
   }
 
-  if (!digitalRead(Maintanance_PIN)) {
-    npt_mode = 1;
-    npt_screen();
-    delay(1000);
+  if (millis() - npt_timer > 3000) {
+    npt_timer = millis();
+    checkNPT();
   }
 
-  if (!digitalRead(Back_PIN)) {
-    npt_mode = 0;
-    main_screen_update(1);
-    delay(1000);
-  }
 
-  if (long_press(POW_PIN, 150)) ESP.restart();
-  if (long_press(WiFi_PIN, 250)) {
-    wm.resetSettings();
+  if (long_press(POW_PIN, 150)) {
+    digitalWrite(active_LED, 0);
+    digitalWrite(NPT_LED, 0);
+
     ESP.restart();
   }
 }
