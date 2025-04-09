@@ -17,7 +17,7 @@ String machineMac, user, machineNo, buyer, style, workingHour, npt, process, npt
 String main_url = "http://163.47.84.201:9090/garments-pro/protracker/sewing-droplets/iot/";
 
 
-#define SD_CS 21  // SD কার্ড CS পিন
+#define SD_CM 21  // SD কার্ড CS পিন
 #define OK_PIN 14
 #define Back_PIN 27
 #define Maintanance_PIN 26
@@ -27,8 +27,9 @@ String main_url = "http://163.47.84.201:9090/garments-pro/protracker/sewing-drop
 #define buzzer 13
 #define active_LED 16
 #define API_OK_LED 17
-#define API_FAIL_LED 22
+#define API_FAIL_LED 12
 #define NPT_LED 19
+#define LCD_LED 22
 
 #define press_time 3
 
@@ -46,6 +47,7 @@ void setup() {
   pinMode(active_LED, OUTPUT);
   pinMode(API_FAIL_LED, OUTPUT);
   pinMode(API_OK_LED, OUTPUT);
+  pinMode(LCD_LED, OUTPUT);
   pinMode(NPT_LED, OUTPUT);
   pinMode(OK_PIN, INPUT_PULLUP);
   pinMode(Back_PIN, INPUT_PULLUP);
@@ -53,6 +55,7 @@ void setup() {
   pinMode(Help_PIN, INPUT_PULLUP);
   pinMode(POW_PIN, INPUT_PULLUP);
   pinMode(WiFi_PIN, INPUT_PULLUP);
+  digitalWrite(LCD_LED, 0);
 
   tft.begin();
   tft.setRotation(3);
@@ -60,6 +63,7 @@ void setup() {
   //waiting to press the power button for 2 sec
   while (1) {
     if (long_press(POW_PIN, 100)) {
+      digitalWrite(LCD_LED, 1);
       digitalWrite(buzzer, 1);
       delay(100);
       digitalWrite(buzzer, 0);
@@ -70,6 +74,7 @@ void setup() {
       break;
     }
   }
+
   disp_wifi();
   WiFi.mode(WIFI_STA);
   wm.autoConnect("WiFi Setup");
@@ -161,10 +166,10 @@ void loop() {
     }
   }
 
-  // if (millis() - npt_timer > 3000) {
-  //   npt_timer = millis();
-  //   checkNPT();
-  // }
+  if (millis() - npt_timer > 3000) {
+    npt_timer = millis();
+    checkNPT();
+  }
 
 
   if (long_press(POW_PIN, 150)) {

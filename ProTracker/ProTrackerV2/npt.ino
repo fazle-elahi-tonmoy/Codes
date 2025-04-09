@@ -1,5 +1,5 @@
-void npt_screen() {
-  digitalWrite(NPT_LED, 1);
+void npt_screen(bool a) {
+  (a) ? digitalWrite(NPT_LED, 1) : digitalWrite(NPT_LED, 0);
   digitalWrite(active_LED, 0);
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_WHITE);
@@ -14,17 +14,17 @@ void npt_screen() {
   tft.drawString("Machine NO:", 120, 129);
   tft.fillRoundRect(125, 119, 300, 24, 10, TFT_WHITE);
   tft.fillRoundRect(150, 160, 180, 50, 20, TFT_DARKGREY);
-  tft.fillCircle(285, 185, 20, TFT_RED);
-  tft.setTextColor(TFT_RED);
+  (a) ? tft.fillCircle(285, 185, 20, TFT_RED) : tft.fillCircle(285, 185, 20, TFT_GREEN);
+  (a) ? tft.setTextColor(TFT_RED) : tft.setTextColor(TFT_GREEN);
   tft.setFreeFont(FSSB18);
   tft.drawString("NPT", 255, 185);
   tft.setTextDatum(TC_DATUM);
   tft.setTextColor(TFT_WHITE);
   tft.setFreeFont(FSS9);
-  tft.drawString("NPT Activated", 240, 220);
-  tft.drawString("Device is not working right now", 240, 245);
+  (a) ? tft.drawString("NPT Activated", 240, 220) : tft.drawString("NPT Deactivated", 240, 220);
+  (a) ? tft.drawString("Device is not working right now", 240, 245) : tft.drawString("Device is working right now", 240, 245);
   tft.setTextDatum(BR_DATUM);
-  tft.drawString("Please Contact with Supervisor", 470, 310);
+  (a) ? tft.drawString("Please Contact with Supervisor", 470, 310) : tft.drawString("Press Back Button to Enter Main Menu", 470, 310);
 
   tft.setTextDatum(TL_DATUM);
   tft.setTextFont(1);

@@ -112,13 +112,15 @@ void checkNPT() {
         buyer = data["buyer"].as<const char*>();
         style = data["style"].as<const char*>();
         npt_start_time = data["start_time"].as<const char*>();
-
+        Serial.println(npt_status);
         if (npt_status == "ON" && npt_mode == 0) {
           npt_mode = 1;
-          npt_screen();
-        } else if (npt_status == "OFF" && npt_mode == 1) {
+          npt_screen(1);
+        }
+
+        else if (npt_status == "OFF" && npt_mode == 1) {
           npt_mode = 0;
-          main_screen_update(1);
+          npt_screen(0);
         }
       }
     }

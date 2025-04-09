@@ -68,7 +68,7 @@ void setup() {
 
   my_node = RMaker.initNode("Bank Asia");
 
-  Param PIR_Status("PIR Status", "custom.param.pir", value(0), PROP_FLAG_READ | PROP_FLAG_WRITE);
+  Param PIR_Status("PIR Status", "custom.param.pir", value((bool)0), PROP_FLAG_READ);
   Param number("Phone Number", "esp.param.ota_status", value(phone_number), PROP_FLAG_READ | PROP_FLAG_WRITE);
   Param sms("SMS", "esp.param.ota_status", value("Type Anything Here!"), PROP_FLAG_READ | PROP_FLAG_WRITE);
   trig.addPowerParam(false, "Security");

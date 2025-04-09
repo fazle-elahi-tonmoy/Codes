@@ -7,7 +7,7 @@ void error_screen() {
   tft.setTextDatum(TC_DATUM);
   tft.setFreeFont(FSSB9);
   tft.setTextColor(TFT_WHITE);
-  tft.drawString("No API Response", 240, 170);
+  tft.drawString("Could Not Connect", 240, 170);
 
   digitalWrite(API_FAIL_LED, 1);
   digitalWrite(buzzer, 1);
