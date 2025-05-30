@@ -5,7 +5,7 @@ Servo base, top;
 BluetoothSerial SerialBT;
 
 
-int lms = 32, lmf = 33, lmb = 25, rmf = 26, rmb = 27, rms = 13;
+int lms = 25, lmf = 33, lmb = 25, rmf = 26, rmb = 27, rms = 13;
 int speed = 150;
 char x;
 

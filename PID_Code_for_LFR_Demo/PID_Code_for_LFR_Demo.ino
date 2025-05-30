@@ -47,8 +47,8 @@ void PID(){
 void check()
 {
   for (int i = 0; i < 8; i++) {
-    sensor[i] = analogRead(i + 10);
-    (sensor[i] > 500) ? sensor[i] = 1 : sensor[i] = 0 ;
+    sensor[i] = analogRead(i);
+    (sensor[i] > 700) ? sensor[i] = 1 : sensor[i] = 0 ;
     pos+= sensor[i]*i*1000;
     sum+= sensor[i];
   }
