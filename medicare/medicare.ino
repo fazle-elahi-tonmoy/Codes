@@ -34,7 +34,8 @@ String incoming_message;
 char phone_number[15];
 
 void setup() {
-  Serial.begin(115200);
+  Serial.
+begin(115200);
   EEPROM.begin(24);
   Wire.begin();
   Wire.setClock(400000L);

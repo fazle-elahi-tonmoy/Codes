@@ -1,8 +1,8 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-#define sw 17
-#define led 2
+#define sw 15
+#define led 13
 
 int send;
 
