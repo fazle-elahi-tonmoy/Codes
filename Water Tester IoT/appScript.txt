@@ -1,0 +1,40 @@
+function doPost(e) {
+  // e.postData.contents holds the raw posted JSON
+  try {
+    var raw = e.postData.contents;
+    var data = JSON.parse(raw);
+
+    // Open spreadsheet - use ID or open by URL.
+    // Option A: open by ID:
+    var ss = SpreadsheetApp.openById("1yZeoBVSUc1sLOD6ZqOVrbiVm2uWRGhYXDUL_y0swgbw"); // <-- replace with your spreadsheet ID
+    var sheet = ss.getSheetByName("Sheet1"); // change if your sheet name differs
+
+    // Ensure headers exist (optional)
+    // Headers: Timestamp, pH, pH_voltage, pH_raw, Temp_C, TurbidityPercent, TurbidityVoltage, TurbidityRaw, Latitude, Longitude, HDOP, raw_json
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["Timestamp (UTC)", "pH", "pH_voltage", "pH_raw", "Temp_C", "TurbidityPercent", "TurbidityVoltage", "TurbidityRaw", "Latitude", "Longitude", "HDOP", "raw_json"]);
+    }
+
+    var timestamp = new Date(); // server time (UTC or user's timezone depending on spreadsheet settings)
+    var row = [
+      timestamp,
+      data.pH_value === null ? "" : data.pH_value,
+      data.pH_voltage === undefined ? "" : data.pH_voltage,
+      data.pH_raw === undefined ? "" : data.pH_raw,
+      data.temp_c === null ? "" : data.temp_c,
+      data.turb_percent === undefined ? "" : data.turb_percent,
+      data.turb_voltage === undefined ? "" : data.turb_voltage,
+      data.turb_raw === undefined ? "" : data.turb_raw,
+      data.latitude === null ? "" : data.latitude,
+      data.longitude === null ? "" : data.longitude,
+      data.hdop === undefined ? "" : data.hdop,
+      raw
+    ];
+
+    sheet.appendRow(row);
+
+    return ContentService.createTextOutput(JSON.stringify({status: "ok"})).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({status: "error", message: String(err)})).setMimeType(ContentService.MimeType.JSON);
+  }
+}
