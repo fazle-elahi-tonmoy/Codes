@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gas Cylinder Monitor</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1220;
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  margin: 20px 0;
+}
+
+button {
+  padding: 10px 18px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* ================= DASHBOARD ================= */
+.dashboard {
+  display: flex;
+  gap: 50px;
+  margin-top: 30px;
+}
+
+/* ================= GAUGE ================= */
+.gauge {
+  width: 230px;
+  height: 260px;
+  position: relative;
+  transition: 0.4s ease;
+}
+
+.gauge.inactive {
+  opacity: 0.35;
+}
+
+svg {
+  transform: rotate(-90deg);
+}
+
+.gauge-value {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+}
+
+.gauge-status {
+  position: absolute;
+  bottom: -18px;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+/* ================= ACTIVE GLOW ================= */
+.gauge.active {
+  filter: drop-shadow(0 0 12px #22c55e);
+}
+
+/* ================= FLOW ANIMATION ================= */
+@keyframes flow {
+  0% { stroke-dashoffset: 565; opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0.2; }
+}
+
+.flow {
+  animation: flow 2s linear infinite;
+}
+
+/* ================= STATUS BOX ================= */
+.status-box {
+  width: 500px;
+  margin-top: 30px;
+  padding: 14px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 18px;
+  border: 2px solid #e5e7eb;
+}
+
+.alert {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Gas Cylinder Monitoring</h1>
+<button onclick="connectSerial()">Connect to ESP32</button>
+
+<div class="dashboard">
+
+  <!-- CYLINDER 1 -->
+  <div class="gauge" id="cyl1">
+    <svg width="230" height="230">
+      <circle cx="115" cy="115" r="95" stroke="#1e293b" stroke-width="18" fill="none"/>
+      <circle id="g1" cx="115" cy="115" r="95"
+        stroke="#22c55e" stroke-width="18" fill="none"
+        stroke-dasharray="597"
+        stroke-dashoffset="597"/>
+      <circle id="flow1" cx="115" cy="115" r="95"
+        stroke="#22c55e" stroke-width="4" fill="none"
+        stroke-dasharray="40 20"
+        stroke-dashoffset="0"
+        opacity="0"/>
+    </svg>
+    <div class="gauge-value" id="p1">0 mbar</div>
+    <div class="gauge-status" id="s1">STANDBY</div>
+  </div>
+
+  <!-- CYLINDER 2 -->
+  <div class="gauge inactive" id="cyl2">
+    <svg width="230" height="230">
+      <circle cx="115" cy="115" r="95" stroke="#1e293b" stroke-width="18" fill="none"/>
+      <circle id="g2" cx="115" cy="115" r="95"
+        stroke="#22c55e" stroke-width="18" fill="none"
+        stroke-dasharray="597"
+        stroke-dashoffset="597"/>
+      <circle id="flow2" cx="115" cy="115" r="95"
+        stroke="#22c55e" stroke-width="4" fill="none"
+        stroke-dasharray="40 20"
+        stroke-dashoffset="0"
+        opacity="0"/>
+    </svg>
+    <div class="gauge-value" id="p2">0 mbar</div>
+    <div class="gauge-status" id="s2">STANDBY</div>
+  </div>
+
+</div>
+
+<div id="lowBox" class="status-box">
+  Low Pressure Warning
+</div>
+
+<div id="emptyBox" class="status-box">
+  Cylinder Empty
+</div>
+
+<script>
+let port, reader;
+let lastCylinder = null;
+
+async function connectSerial() {
+  port = await navigator.serial.requestPort();
+  await port.open({ baudRate: 115200 });
+
+  const decoder = new TextDecoderStream();
+  port.readable.pipeTo(decoder.writable);
+  reader = decoder.readable.getReader();
+
+  readLoop();
+}
+
+async function readLoop() {
+  let buffer = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += value;
+
+    let lines = buffer.split("\n");
+    buffer = lines.pop();
+
+    for (let line of lines) {
+      try {
+        const data = JSON.parse(line.trim());
+        updateUI(data);
+      } catch {}
+    }
+  }
+}
+
+function updateGauge(id, value) {
+  const max = 10000;
+  const circumference = 597;
+  const offset = circumference * (1 - value / max);
+  document.getElementById(id).style.strokeDashoffset = offset;
+}
+
+function setActiveCylinder(cyl) {
+  if (lastCylinder === cyl) return;
+
+  ["1","2"].forEach(n => {
+    const g = document.getElementById("cyl"+n);
+    const f = document.getElementById("flow"+n);
+    const s = document.getElementById("s"+n);
+
+    if (Number(n) === cyl) {
+      g.classList.add("active");
+      g.classList.remove("inactive");
+      f.classList.add("flow");
+      f.style.opacity = "1";
+      s.innerText = "ACTIVE";
+    } else {
+      g.classList.remove("active");
+      g.classList.add("inactive");
+      f.classList.remove("flow");
+      f.style.opacity = "0";
+      s.innerText = "STANDBY";
+    }
+  });
+
+  lastCylinder = cyl;
+}
+
+function updateUI(data) {
+  updateGauge("g1", data.pressure1);
+  updateGauge("g2", data.pressure2);
+
+  document.getElementById("p1").innerText = data.pressure1 + " mbar";
+  document.getElementById("p2").innerText = data.pressure2 + " mbar";
+
+  setActiveCylinder(data.current_cylinder);
+
+  document.getElementById("lowBox").className =
+    "status-box" + (data.low_pressure ? " alert" : "");
+
+  document.getElementById("emptyBox").className =
+    "status-box" + (data.both_empty ? " alert" : "");
+}
+</script>
+
+</body>
+</html>
