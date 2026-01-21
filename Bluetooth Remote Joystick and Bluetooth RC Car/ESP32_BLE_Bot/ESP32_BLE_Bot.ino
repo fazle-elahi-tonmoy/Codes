@@ -1,29 +1,22 @@
 #include <BluetoothSerial.h>
-#include <ESP32Servo.h>
-
-Servo base, top;
 BluetoothSerial SerialBT;
 
 
-int lms = 25, lmf = 33, lmb = 25, rmf = 26, rmb = 27, rms = 13;
-int speed = 150;
+int lms = 32, lmf = 25, lmb = 33, rmf = 27, rmb = 26, rms = 14;
+int speed = 255;
 char x;
 
 void setup() {
   Serial.begin(115200);
-  SerialBT.begin("Rover");
-  base.attach(22);
-  top.attach(23);
-  base.write(90);
-  top.write(90);
+  SerialBT.begin("Defender");
   pinMode(lmf, OUTPUT);
   pinMode(lmb, OUTPUT);
   pinMode(rmf, OUTPUT);
   pinMode(rmb, OUTPUT);
-  ledcSetup(14, 1000, 8);
-  ledcSetup(15, 1000, 8);
-  ledcAttachPin(lms, 14);
-  ledcAttachPin(rms, 15);
+  ledcSetup(0, 1000, 8);
+  ledcSetup(1, 1000, 8);
+  ledcAttachPin(lms, 0);
+  ledcAttachPin(rms, 1);
   motor(0, 0);
 }
 
@@ -33,4 +26,6 @@ void loop() {
     Serial.println(x);
     motor_mode();
   }
+
+  delay(10);
 }
